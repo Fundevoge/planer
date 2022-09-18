@@ -1,7 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'helper/preference_manager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initPreferences();
+  initializeDateFormatting('de_DE').then((_) => runApp(
+      MaterialApp(
+            title: "Planer",
+            initialRoute: "/",
+            routes: <String, WidgetBuilder>{
+              "/": (_) => MainPage(),
+            },
+          ))
+  );
+
 }
 
 class MyApp extends StatelessWidget {
