@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:planer/pages/main_page.dart';
 
 import 'helper/preference_manager.dart';
 
@@ -11,7 +12,7 @@ void main() async {
             title: "Planer",
             initialRoute: "/",
             routes: <String, WidgetBuilder>{
-              "/": (_) => MainPage(),
+              "/": (_) => const MainPage(),
             },
           ))
   );
