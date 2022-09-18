@@ -33,4 +33,5 @@ void main() async {
 // TODO: Make shared somehow
 //    Multiple Lists, when shared lists send requests
 //    option to move td to shared list
+//    custom icons and names
 // TODO: Fun things; relaxing views e.g. file transfer
