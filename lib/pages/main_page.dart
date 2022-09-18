@@ -10,8 +10,11 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedPageIndex = myPreferences.getInt('lastPageIndex') ?? 0;
-  final List<BottomNavigationBarItem> _navigationBarItems = const <BottomNavigationBarItem>[
-    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Meine Liste')] + getNavBarPrefs();
+  final List<BottomNavigationBarItem> _navigationBarItems =
+      const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Meine Liste'),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender')]
+          + getNavBarPrefs();
 
   void _onItemTapped(int index) {
     setState(() {
