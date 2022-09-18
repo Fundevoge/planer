@@ -10,6 +10,10 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return SafeArea(
+      child: Container(
+        color: const Color(0xffffffff),
+      ),
+    );
   }
 }
