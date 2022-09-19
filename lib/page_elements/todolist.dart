@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class TodoList extends StatefulWidget {
-  const TodoList({Key? key}) : super(key: key);
-
+  const TodoList({Key? key, required this.title}) : super(key: key);
+  final String title;
   @override
   State<TodoList> createState() => _TodoListState();
 }

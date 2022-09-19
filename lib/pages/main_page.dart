@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:planer/helper/preference_manager.dart';
+import 'package:planer/page_elements/calendar.dart';
+import 'package:planer/page_elements/todolist.dart';
+
+import '../page_elements/calendar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -11,10 +15,11 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedPageIndex = myPreferences.getInt('lastPageIndex') ?? 0;
   final List<BottomNavigationBarItem> _navigationBarItems = const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Meine Liste'),
-        BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender')
       ] +
       getNavBarPrefs();
+  late final List<Widget> views;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -24,13 +29,18 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    views = <Widget>[const MyCalendar()] +
+        _navigationBarItems.map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Center(
-          child: Container(
-            color: const Color(0xffffffff),
-          ),
+          child: views[_selectedPageIndex]
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: _navigationBarItems,

@@ -7,6 +7,7 @@ import 'helper/preference_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initPreferences();
+  checkFirstOpen();
   initializeDateFormatting('de_DE').then((_) => runApp(
       MaterialApp(
             title: "Planer",
@@ -14,9 +15,14 @@ void main() async {
             routes: <String, WidgetBuilder>{
               "/": (_) => const MainPage(),
             },
+            debugShowCheckedModeBanner: false,
           ))
   );
+}
 
+void checkFirstOpen(){
+  if(myPreferences.getInt('firstOpenedYear') != null) return;
+  myPreferences.setInt('firstOpenedYear', DateTime.now().year);
 }
 
 // NEXT: implement views and view change on main page
