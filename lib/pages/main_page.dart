@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     views = <Widget>[const MyCalendar()] +
-        _navigationBarItems.map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
+        _navigationBarItems.sublist(1).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
     super.initState();
   }
 
