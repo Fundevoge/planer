@@ -25,8 +25,6 @@ void checkFirstOpen(){
   myPreferences.setInt('firstOpenedYear', DateTime.now().year);
 }
 
-// NEXT: implement views and view change on main page
-
 // TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
 //  -> Tagesplan mit subroutines; Template creation farblich anders
 //  -> Long term Tds e.g. Stromvertrag
@@ -46,6 +44,7 @@ void checkFirstOpen(){
 //  -> can be pulled from another pool?
 //  -> Task specific pools e.g. recipes for breakfast etc.
 // TODO: Add Calendar view with appointments
+//  -> show tasks from different groups in different colors
 // TODO: Make shared somehow
 //    Multiple Lists, when shared lists send requests
 //    option to move td between lists
