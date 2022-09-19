@@ -19,9 +19,14 @@ void main() async {
 
 }
 
+// NEXT: implement views and view change on main page
+
 // TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
-//  Tagesplan mit subroutines; Template creation farblich anders
-// TODO: Groups with header; folded and unfolded
+//  -> Tagesplan mit subroutines; Template creation farblich anders
+//  -> Long term Tds e.g. Stromvertrag
+// TODO: Groups with header
+//  -> folded and unfolded
+//  -> collapse daily routine to colored lines
 // TODO: Sequential TODOS with constraints; Show additional info on what type of task
 //   e.g. calling somewhere  or working etc.
 // TODO: Menu for easily interacting with the Tds;
@@ -29,9 +34,16 @@ void main() async {
 // TODO: Make listitems interactive
 //  -> Move to next day or delete
 // TODO: Add deadlines / specific times to todos
-// TODO: Add Calendar view with apppointments
+// TODO: Create Pools of Tds/Things to do
+//  -> Can be pulled into plan without going away
+//  -> Extra pool for shared lists
+//  -> can be pulled from another pool?
+//  -> Task specific pools e.g. recipes for breakfast etc.
+// TODO: Add Calendar view with appointments
 // TODO: Make shared somehow
 //    Multiple Lists, when shared lists send requests
-//    option to move td to shared list
+//    option to move td between lists
 //    custom icons and names
+//    option for read-only-share; irgendwie ausgegraut
+// TODO: AUtomatic and manual backups
 // TODO: Fun things; relaxing views e.g. file transfer
