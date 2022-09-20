@@ -5,7 +5,7 @@ Basic Idea: Ablauf oft nicht stündlich geregelt
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
  -> Tagesplan mit subroutines; Template creation farblich anders
  -> Long term Tds e.g. Stromvertrag
- -> Different Templates for Werktag/Feiertag
+ -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks
  -> Automatische Pausenerinnerung?
 TODO: Groups with header
  -> folded and unfolded
