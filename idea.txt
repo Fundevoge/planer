@@ -43,7 +43,7 @@ TODO: Additional features
  -> 3 Things in the morning to tick off
  -> Ctrl-Z
  -> Focus Mode: only one header visible AKA temporary td-list
- -> Slider to where task is inserted ; also to pool OR "Insert now" button -> oben?
+ -> Slider to where task is inserted ; also to pool OR "Insert now" button -> oben? ; bewegt sich automatisch mit wenn task inserted
  -> Hidden Templates automatisch erstellen
  -> Tasks long press (multiselect):
     => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern; wiederholend machen
