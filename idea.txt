@@ -8,7 +8,7 @@ Basic Idea: Ablauf oft nicht stündlich geregelt
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
  -> Tagesplan mit subroutines; Template creation farblich anders
  -> Long term Tds e.g. Stromvertrag
- -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks
+ -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks; Type of day as option in repeating
  -> Automatische Pausenerinnerung?
 TODO: Groups with header
  -> folded and unfolded
@@ -46,7 +46,7 @@ TODO: Additional features
  -> Slider to where task is inserted ; also to pool OR "Insert now" button -> oben?
  -> Hidden Templates automatisch erstellen
  -> Tasks long press (multiselect):
-    => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern
+    => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern; wiederholend machen
  -> Task hat automatisch keine Farbe oder Farbe des Headers
  -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar)
     => Jump zu beliebigem Datum und links/rechts für früher/später
