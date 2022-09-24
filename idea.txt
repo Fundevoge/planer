@@ -51,3 +51,5 @@ TODO: Additional features
  -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar)
     => Jump zu beliebigem Datum und links/rechts für früher/später
  -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ)
+ -> Different types of constraints
+ -> Einstellung Deadline automatisch einstellen / übernehmen
