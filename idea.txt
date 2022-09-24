@@ -1,6 +1,9 @@
 Basic Idea: Ablauf oft nicht stündlich geregelt
 -> Flexibilität
 -> Wenigier Willensstärke erforderlich, wenn Tag schon vorgeplant
+-> Einfacheres Habit-building durch fixe Zeitpunkte im Tagesablauf / "Trigger"
+-> Helfen herauszufinden, was einen praktisch daran hindert etwas zu tun und es zu überwinden
+-> Subtasks fördern, nicht zu große Tds auf einmal
 
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
  -> Tagesplan mit subroutines; Template creation farblich anders
@@ -35,3 +38,16 @@ TODO: Make shared somehow
 TODO: Archive done tds after one day; clear cache after fixed interval
 TODO: Automatic and manual backups
 TODO: Fun things; relaxing views e.g. file transfer
+TODO: Additional features
+ -> Duplicate Td
+ -> 3 Things in the morning to tick off
+ -> Ctrl-Z
+ -> Focus Mode: only one header visible AKA temporary td-list
+ -> Slider to where task is inserted ; also to pool OR "Insert now" button -> oben?
+ -> Hidden Templates automatisch erstellen
+ -> Tasks long press (multiselect):
+    => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern
+ -> Task hat automatisch keine Farbe oder Farbe des Headers
+ -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar)
+    => Jump zu beliebigem Datum und links/rechts für früher/später
+ -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ)
