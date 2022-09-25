@@ -53,6 +53,7 @@ TODO: Additional features
  -> Task hat automatisch keine Farbe oder Farbe des Headers
  -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar)
     => Jump zu beliebigem Datum und links/rechts für früher/später
+    => Vergangene Tage read-only
  -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ)
  -> Different types of constraints
  -> Einstellung Deadline automatisch einstellen / übernehmen -> ansonsten schließt sich periodic und deadline aus
