@@ -6,7 +6,7 @@ Basic Idea: Ablauf oft nicht stündlich geregelt
 -> Subtasks fördern, nicht zu große Tds auf einmal
 
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
- -> Tagesplan mit subroutines; Template creation farblich anders
+ -> Tagesplan mit subroutines; Templates farblich anders
  -> Long term Tds e.g. Stromvertrag
  -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks; Type of day as option in repeating
  -> Automatische Pausenerinnerung?
@@ -36,14 +36,17 @@ TODO: Make shared somehow
    option for read-only-share; irgendwie ausgegraut
    Assign specific person or everyone to td
 TODO: Archive done tds after one day; clear cache after fixed interval
-TODO: Automatic and manual backups
+TODO: Automatic and manual backups -> Every Minute send Delta
 TODO: Fun things; relaxing views e.g. file transfer
 TODO: Additional features
  -> Duplicate Td
  -> 3 Things in the morning to tick off
- -> Ctrl-Z
- -> Focus Mode: only one header visible AKA temporary td-list
- -> Slider to where task is inserted ; also to pool OR "Insert now" button -> oben? ; bewegt sich automatisch mit wenn task inserted
+ -> Ctrl-Z => Auch expand/collapse
+ -> Focus Mode: only one header visible AKA temporary td-list; Show new tasks; Insert directly before/after shown tasks
+ -> Slider to where task is inserted ;
+    also to pool OR "Insert now" button -> oben? ;
+    bewegt sich automatisch mit wenn task inserted
+    default position?
  -> Hidden Templates automatisch erstellen
  -> Tasks long press (multiselect):
     => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern; wiederholend machen
@@ -52,4 +55,10 @@ TODO: Additional features
     => Jump zu beliebigem Datum und links/rechts für früher/später
  -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ)
  -> Different types of constraints
- -> Einstellung Deadline automatisch einstellen / übernehmen
+ -> Einstellung Deadline automatisch einstellen / übernehmen -> ansonsten schließt sich periodic und deadline aus
+ -> Hidden template editor
+ -> Default icon?
+ -> Changes in task modify template?
+ -> Farbe für *Favoriten
+ -> Verschiedene Neben-Todolisten, die nicht unten angezeigt werden und eigene Pools bilden
+ -> Rate limiting für API; Token generation und Ablauf
