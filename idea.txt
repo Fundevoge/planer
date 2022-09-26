@@ -8,12 +8,13 @@ Basic Idea: Ablauf oft nicht stündlich geregelt
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
  -> Tagesplan mit subroutines; Templates farblich anders
  -> Long term Tds e.g. Stromvertrag
- -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks; Type of day as option in repeating
+ -> Different Templates for Werktag/Feiertag => Manual override for day/week/two weeks;
+      Type of day as option in repeating
  -> Automatische Pausenerinnerung?
 TODO: Groups with header
  -> folded and unfolded
  -> collapse daily routine to colored lines
- -> Start day with daily stuff collapsed (optionally)
+ -> Start day with daily stuff collapsed (optionally) OR Focus on morning routine
 TODO: Sequential TODOS with constraints; Show additional info on what type of task
   e.g. calling somewhere  or working etc.
 TODO: Menu for easily interacting with the Tds;
@@ -35,6 +36,7 @@ TODO: Make shared somehow
    custom icons and names
    option for read-only-share; irgendwie ausgegraut
    Assign specific person or everyone to td
+   possibility to share own plan
 TODO: Archive done tds after one day; clear cache after fixed interval
 TODO: Automatic and manual backups -> Every Minute send Delta
 TODO: Fun things; relaxing views e.g. file transfer
@@ -51,15 +53,19 @@ TODO: Additional features
  -> Tasks long press (multiselect):
     => Einfärben; Gruppieren unter (neuen) header; Löschen; als template speichern; wiederholend machen
  -> Task hat automatisch keine Farbe oder Farbe des Headers
- -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar)
+ -> Header zeigt an, welcher Tag ist / für welchen Tag die Liste ist (jeweils ausblendbar) => Namen prerender
     => Jump zu beliebigem Datum und links/rechts für früher/später
     => Vergangene Tage read-only
- -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ)
+ -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ) => prerender
  -> Different types of constraints
  -> Einstellung Deadline automatisch einstellen / übernehmen -> ansonsten schließt sich periodic und deadline aus
+ -> Periodic Task verschieben => ganzen rhythmus verschieben dialog
  -> Hidden template editor
  -> Default icon?
  -> Changes in task modify template?
  -> Farbe für *Favoriten
  -> Verschiedene Neben-Todolisten, die nicht unten angezeigt werden und eigene Pools bilden
  -> Rate limiting für API; Token generation und Ablauf
+ -> Optional warning when eating directly before sleeping
+    => Type: Meal + Sleep AND Directly adjacent or <1h between only on today
+ -> Multiple Pools for todo lists
