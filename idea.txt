@@ -1,9 +1,11 @@
 Basic Idea: Ablauf oft nicht stündlich geregelt
 -> Flexibilität
--> Wenigier Willensstärke erforderlich, wenn Tag schon vorgeplant
+-> Wenigier Willensstärke erforderlich, wenn Tag schon vorgeplant (Ego deplpetion)
+-> Dinge Umsetzen die wichtig sind muss keinen Spaß machen
 -> Einfacheres Habit-building durch fixe Zeitpunkte im Tagesablauf / "Trigger"
 -> Helfen herauszufinden, was einen praktisch daran hindert etwas zu tun und es zu überwinden
 -> Subtasks fördern, nicht zu große Tds auf einmal
+-> Karma: Für jede Handlung einzeln verantwortlich
 
 TODO: Make Routines definable: Wie Wecker, teilweise auch mehrmals täglich oder Monatlich;
  -> Tagesplan mit subroutines; Templates farblich anders
@@ -57,7 +59,9 @@ TODO: Additional features
     => Jump zu beliebigem Datum und links/rechts für früher/später
     => Vergangene Tage read-only
  -> Pool: Tasks mit Deadline: anzeigen, wie lange noch Zeit (h, m, üm, 3-6d, 1-7w, 2-11M, 1-xJ) => prerender
- -> Different types of constraints
+ -> Different types of constraints;
+    => Some require additional Tasks to resolve the constraint (internal vs external)
+       => Periodic: both need to be periodic and relation: Time difference required -> Wie viel tage vorher Datum
  -> Einstellung Deadline automatisch einstellen / übernehmen -> ansonsten schließt sich periodic und deadline aus
  -> Periodic Task verschieben => ganzen rhythmus verschieben dialog
  -> Hidden template editor
@@ -66,6 +70,19 @@ TODO: Additional features
  -> Farbe für *Favoriten
  -> Verschiedene Neben-Todolisten, die nicht unten angezeigt werden und eigene Pools bilden
  -> Rate limiting für API; Token generation und Ablauf
+ -> UUID generation -> Validation that it exists
  -> Optional warning when eating directly before sleeping
     => Type: Meal + Sleep AND Directly adjacent or <1h between only on today
- -> Multiple Pools for todo lists
+ -> Multiple Pools for td lists
+ -> Enable or disable nicer animations
+ -> Interaction: Focus -> specific focus
+ -> Automatically move not done simple tasks to pool;
+    => ask for periodic tasks if shift rhythm or just move or delete
+ -> Enter recursive list by indentations
+ -> Default: Today's Tasks without index are automatically inserted after last structure task;
+    with time auto between meals after periodic tasks; when moved: same position relative to structure
+
+
+
+TODO: TASK App as Game
+ -> Unlock new features for detailled planning
