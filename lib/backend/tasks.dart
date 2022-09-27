@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
+import 'helper.dart';
 
 enum StructureTaskActive { always, workdays, holidays }
 
@@ -10,7 +11,7 @@ void initColors() {
   tohColors.add(Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF));
   tohColors.add(Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF));
   tohColors.add(Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF));
-  tohColors.addAll([for(String s in myPreferences.getStringList('taskColorIds') ?? []) Color(int.parse(s))]);
+  tohColors.addAll([for (String s in myPreferences.getStringList('taskColorIds') ?? []) Color(int.parse(s))]);
 }
 
 class Periodicity {
@@ -144,8 +145,11 @@ class _TileToHState extends State<TileToH> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      tileColor: tohColors[widget.toh.colorIndex],
       shape: RoundedRectangleBorder(
-        side: BorderSide(color: tohColors[widget.toh.colorIndex], width: 1),
+        side: BorderSide(
+            color: widget.toh.isSelected ? invert(tohColors[widget.toh.colorIndex]) : tohColors[widget.toh.colorIndex],
+            width: 3,),
         borderRadius: BorderRadius.circular(5),
       ),
       enabled: widget.toh.constraints?.isEmpty ?? true,
@@ -156,7 +160,6 @@ class _TileToHState extends State<TileToH> {
         });
         widget.enterSelectionMode();
       },
-      selected: widget.toh.isSelected,
       leading: widget.toh.deadlineOverdue()
           ? const Icon(
               Icons.warning_amber_rounded,
