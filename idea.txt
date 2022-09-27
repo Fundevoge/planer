@@ -84,6 +84,7 @@ TODO: Additional features
  -> Default: Today's Tasks without index are automatically inserted after last structure task;
     with time auto between meals after periodic tasks; when moved: same position relative to structure
  -> Recognize repeating task -> make repeating / dont ask again
+ -> Color add dialog
 
 
 
