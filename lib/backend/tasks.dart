@@ -1,12 +1,4 @@
-/*
-TaskTypes:
-  template
-  unique
-  structure
-  periodic
-*/
-
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
 
@@ -27,7 +19,11 @@ class Periodicity {
   Periodicity(this.baseDate, this.rhythms, this.baseOffsets);
 }
 
-enum TDConstraint { external, internal }
+class TDConstraint {
+  bool external;
+  List<ToH>? requiredTasks;
+  TDConstraint({required this.external, this.requiredTasks});
+}
 
 // Any Task or Header:
 //  Name, Notes, timerduration?, subtasks?, listname, Date?, index, is_done, icon, color, isHighlighted, deadline?,
@@ -63,7 +59,48 @@ class ToH {
       this.deadline,
       required this.isRepeating,
       this.constraints});
+
+  ListTile renderEditModeToH() {
+    return ListTile(
+      title: ReorderableDragStartListener(index: index, child: Text(name)),
+      trailing: Row(
+        children: [ReorderableDragStartListener(index: index, child: icon)],
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+
+  ListTile renderToH(void Function(List<TDConstraint>?) showConstraints) {
+    return ListTile(
+      leading: _deadlineOverdue()
+          ? const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.amber,
+            )
+          : null,
+      title: ReorderableDragStartListener(index: index, child: Text(name)),
+      trailing: Row(
+        children: [
+          if ((constraints ?? []).isNotEmpty)
+            IconButton(
+              icon: const Icon(CupertinoIcons.exclamationmark),
+              onPressed: () => showConstraints(constraints),
+            ),
+          ReorderableDragStartListener(index: index, child: icon),
+          Checkbox(value: isDone, onChanged: (val) => {isDone = val!}),
+        ],
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+
+  bool _deadlineOverdue() {
+    if (listDate == null || deadline == null) return false;
+    if (listDate!.isAfter(DateTime(deadline!.year, deadline!.month, deadline!.day))) return false;
+    return true;
+  }
 }
+
 // Structure (Not for task list, only backend and structure maniplator):
 //  Whenactive
 class StructureToH extends ToH {
@@ -86,6 +123,7 @@ class StructureToH extends ToH {
       super.constraints,
       required this.whenActive});
 }
+
 // Repeating (Not for task list, only backend and periodicity maniplator):
 //  Periodicity(Rhythm, Base_Date)
 class PeriodicToH extends ToH {
@@ -93,20 +131,20 @@ class PeriodicToH extends ToH {
 
   PeriodicToH(
       {required super.name,
-        required super.notes,
-        super.timeLimit,
-        super.children,
-        required super.listName,
-        super.listDate,
-        required super.index,
-        required super.isDone,
-        required super.icon,
-        required super.colorIndex,
-        required super.isHighlighted,
-        super.deadline,
-        required super.isRepeating,
-        super.constraints,
-        required this.periodicity});
+      required super.notes,
+      super.timeLimit,
+      super.children,
+      required super.listName,
+      super.listDate,
+      required super.index,
+      required super.isDone,
+      required super.icon,
+      required super.colorIndex,
+      required super.isHighlighted,
+      super.deadline,
+      required super.isRepeating,
+      super.constraints,
+      required this.periodicity});
 }
 
 void addTask() {}
