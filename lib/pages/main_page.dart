@@ -4,7 +4,6 @@ import 'package:planer/page_elements/calendar.dart';
 import 'package:planer/page_elements/todolist.dart';
 import 'package:planer/test/complex_calendar.dart';
 
-import '../page_elements/calendar.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -32,7 +31,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    views = <Widget>[const MyCalendar(), TableComplexExample()] +
+    views = <Widget>[const TaskCalendar(), TableComplexExample()] +
         _navigationBarItems.sublist(2).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
     super.initState();
   }

@@ -4,14 +4,14 @@ import 'package:table_calendar/table_calendar.dart';
 import '../backend/preference_manager.dart';
 
 
-class MyCalendar extends StatefulWidget {
-  const MyCalendar({Key? key}) : super(key: key);
+class TaskCalendar extends StatefulWidget {
+  const TaskCalendar({Key? key}) : super(key: key);
 
   @override
-  State<MyCalendar> createState() => _MyCalendarState();
+  State<TaskCalendar> createState() => _TaskCalendarState();
 }
 
-class _MyCalendarState extends State<MyCalendar> {
+class _TaskCalendarState extends State<TaskCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
