@@ -6,11 +6,9 @@ TaskTypes:
   periodic
 */
 
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
-import 'package:planer/backend/tasks.dart';
 
 enum StructureTaskActive { always, workdays, holidays }
 
