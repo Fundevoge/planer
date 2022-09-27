@@ -19,7 +19,6 @@ void main() async {
           ))
   );
 }
-var m = Scaffold();
 
 void checkFirstOpen(){
   if(myPreferences.getInt('firstOpenedYear') != null) return;
