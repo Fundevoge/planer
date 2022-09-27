@@ -5,11 +5,12 @@ import 'package:planer/backend/preference_manager.dart';
 enum StructureTaskActive { always, workdays, holidays }
 
 // 0 For Structure, 1 for repeating, 2 otherwise default
-final List<Color> colorsForTypes = [];
+final List<Color> tohColors = [];
 void initColors() {
-  colorsForTypes.add(Color(myPreferences.getInt('structureTaskColor') ?? 0));
-  colorsForTypes.add(Color(myPreferences.getInt('repeatingTaskColor') ?? 0));
-  colorsForTypes.add(Color(myPreferences.getInt('defaultTaskColor') ?? 0));
+  tohColors.add(Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF));
+  tohColors.add(Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF));
+  tohColors.add(Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF));
+  tohColors.addAll([for(String s in myPreferences.getStringList('taskColorIds') ?? []) Color(int.parse(s))]);
 }
 
 class Periodicity {
@@ -40,6 +41,7 @@ class ToH {
   Icon icon;
   int colorIndex;
   bool isHighlighted;
+  bool isSelected;
   DateTime? deadline;
   bool isRepeating;
   List<TDConstraint>? constraints;
@@ -56,45 +58,12 @@ class ToH {
       required this.icon,
       required this.colorIndex,
       required this.isHighlighted,
+      required this.isSelected,
       this.deadline,
       required this.isRepeating,
       this.constraints});
 
-  ListTile renderEditModeToH() {
-    return ListTile(
-      title: ReorderableDragStartListener(index: index, child: Text(name)),
-      trailing: Row(
-        children: [ReorderableDragStartListener(index: index, child: icon)],
-        mainAxisSize: MainAxisSize.min,
-      ),
-    );
-  }
-
-  ListTile renderToH(void Function(List<TDConstraint>?) showConstraints) {
-    return ListTile(
-      leading: _deadlineOverdue()
-          ? const Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.amber,
-            )
-          : null,
-      title: ReorderableDragStartListener(index: index, child: Text(name)),
-      trailing: Row(
-        children: [
-          if ((constraints ?? []).isNotEmpty)
-            IconButton(
-              icon: const Icon(CupertinoIcons.exclamationmark),
-              onPressed: () => showConstraints(constraints),
-            ),
-          ReorderableDragStartListener(index: index, child: icon),
-          Checkbox(value: isDone, onChanged: (val) => {isDone = val!}),
-        ],
-        mainAxisSize: MainAxisSize.min,
-      ),
-    );
-  }
-
-  bool _deadlineOverdue() {
+  bool deadlineOverdue() {
     if (listDate == null || deadline == null) return false;
     if (listDate!.isAfter(DateTime(deadline!.year, deadline!.month, deadline!.day))) return false;
     return true;
@@ -118,6 +87,7 @@ class StructureToH extends ToH {
       required super.icon,
       required super.colorIndex,
       required super.isHighlighted,
+      required super.isSelected,
       super.deadline,
       required super.isRepeating,
       super.constraints,
@@ -141,10 +111,101 @@ class PeriodicToH extends ToH {
       required super.icon,
       required super.colorIndex,
       required super.isHighlighted,
+      required super.isSelected,
       super.deadline,
       required super.isRepeating,
       super.constraints,
       required this.periodicity});
+}
+
+class TileToH extends StatefulWidget {
+  final ToH toh;
+  final void Function(int) moveToDone;
+  final void Function() enterSelectionMode;
+  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(Duration) startTimer;
+  final void Function(ToH) onTapCallback;
+
+  const TileToH(
+      {Key? key,
+      required this.toh,
+      required this.moveToDone,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.startTimer,
+      required this.onTapCallback})
+      : super(key: key);
+
+  @override
+  State<TileToH> createState() => _TileToHState();
+}
+
+class _TileToHState extends State<TileToH> {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: tohColors[widget.toh.colorIndex], width: 1),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      enabled: widget.toh.constraints?.isEmpty ?? true,
+      onTap: () => widget.onTapCallback(widget.toh),
+      onLongPress: () {
+        setState(() {
+          widget.toh.isSelected = true;
+        });
+        widget.enterSelectionMode();
+      },
+      selected: widget.toh.isSelected,
+      leading: widget.toh.deadlineOverdue()
+          ? const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.amber,
+            )
+          : const Icon(
+              Icons.schedule,
+              color: Colors.lightGreen,
+            ),
+      title: ReorderableDragStartListener(index: widget.toh.index, child: Text(widget.toh.name)),
+      trailing: Row(
+        children: [
+          if (widget.toh.timeLimit != null)
+            IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
+          if ((widget.toh.constraints ?? []).isNotEmpty)
+            IconButton(
+              icon: const Icon(CupertinoIcons.exclamationmark),
+              onPressed: () => widget.showConstraints(widget.toh.constraints),
+            ),
+          ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+          Checkbox(
+              value: widget.toh.isDone,
+              onChanged: (val) {
+                setState(() {
+                  widget.toh.isDone = val!;
+                });
+                widget.moveToDone(widget.toh.index);
+              }),
+        ],
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
+}
+
+class EditModeTileToH extends StatelessWidget {
+  final ToH toh;
+  const EditModeTileToH({Key? key, required this.toh}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: ReorderableDragStartListener(index: toh.index, child: Text(toh.name)),
+      trailing: Row(
+        children: [ReorderableDragStartListener(index: toh.index, child: toh.icon)],
+        mainAxisSize: MainAxisSize.min,
+      ),
+    );
+  }
 }
 
 void addTask() {}
