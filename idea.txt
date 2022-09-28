@@ -64,6 +64,7 @@ TODO: Additional features
  -> Different types of constraints;
     => Some require additional Tasks to resolve the constraint (internal vs external)
        => Periodic: both need to be periodic and relation: Time difference required -> Wie viel tage vorher Datum
+    -> when created insert above old task
  -> Einstellung Deadline automatisch einstellen / übernehmen -> ansonsten schließt sich periodic und deadline aus
  -> Periodic Task verschieben => ganzen rhythmus verschieben dialog
  -> Hidden template editor
@@ -83,9 +84,13 @@ TODO: Additional features
  -> Enter recursive list by indentations
  -> Default: Today's Tasks without index are automatically inserted after last structure task;
     with time auto between meals after periodic tasks; when moved: same position relative to structure
+    => Changes to structure task => ask if for all =>? apply to all following + pattern
  -> Recognize repeating task -> make repeating / dont ask again
  -> Color add dialog
-
+ -> Enter holidays; holidays as option for repeating/structure tasks; reminder to take holidays
+ -> Automatic icon based on name -> set once automatically unless set by user per new task
+    => not for multiple tasks; default icon: empty
+ -> When new day viewed: only save if modified
 
 
 TODO: TASK App as Game
