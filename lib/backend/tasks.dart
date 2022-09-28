@@ -32,7 +32,7 @@ class TDConstraint {
 //  Name, Notes, timerduration?, subtasks?, listname, Date?, index, is_done, icon, color, isHighlighted, deadline?,
 //  is_repeating, constraints?
 class ToH {
-  String uid = generateUid();
+  final Key uid = generateUid();
   String name;
   String notes;
   Duration? timeLimit;
@@ -153,7 +153,6 @@ class _TileToHState extends State<TileToH> {
         widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
 
     return Stack(
-      key: Key(widget.toh.uid),
       alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
         ListTile(

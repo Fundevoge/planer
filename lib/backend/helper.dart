@@ -17,6 +17,6 @@ Color greyedColor(Color color){
 
 final Random random = Random();
 
-String generateUid(){
-  return "${DateTime.now().microsecondsSinceEpoch}${random.nextInt(1<<32)}";
+Key generateUid(){
+  return Key("${DateTime.now().microsecondsSinceEpoch}${random.nextInt(1<<32)}");
 }
