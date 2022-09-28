@@ -171,7 +171,7 @@ class _TileToHState extends State<TileToH> {
             });
             widget.enterSelectionMode();
           },
-          leading: widget.toh.deadlineOverdue()
+          leading: ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.deadlineOverdue()
               ? const Icon(
                   Icons.warning_amber_rounded,
                   color: Colors.amber,
@@ -180,7 +180,8 @@ class _TileToHState extends State<TileToH> {
                   Icons.schedule,
                   color: Colors.lightGreen,
                 ),
-          title: ReorderableDragStartListener(index: widget.toh.index, child: Text(widget.toh.name)),
+          ),
+          title: Text(widget.toh.name),
           trailing: Row(
             children: [
               if (widget.toh.timeLimit != null)
@@ -210,12 +211,12 @@ class _TileToHState extends State<TileToH> {
               Icon(
                 Icons.star,
                 color: Colors.black,
-                size: 14,
+                size: 24,
               ),
               Icon(
                 Icons.star,
                 color: Colors.amberAccent,
-                size: 12,
+                size: 22,
               )
             ],
           )
