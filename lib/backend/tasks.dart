@@ -146,11 +146,12 @@ class TileToH extends StatefulWidget {
 class _TileToHState extends State<TileToH> {
   @override
   Widget build(BuildContext context) {
+    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
     final Color tohColor = tohColors[widget.toh.colorIndex];
-    final Color _tileColor = widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(tohColor) : tohColor;
+    final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
-    final Color _boundaryColor =
-        widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
+    final Color _boundaryColor = hasConstraints ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
+    final Color _textColor = hasConstraints ? const Color(0xff484848) : Colors.black;
 
     return Stack(
       alignment: AlignmentDirectional.topEnd,
@@ -190,13 +191,13 @@ class _TileToHState extends State<TileToH> {
               const SizedBox(
                 width: 15,
               ),
-              Text(widget.toh.name, style: taskTextStyle,),
+              Text(widget.toh.name, style: taskTextStyle.copyWith(color: _textColor),),
               Expanded(child: Container()),
               Row(
                 children: [
                   if (widget.toh.timeLimit != null)
-                    IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
-                  if ((widget.toh.constraints ?? []).isNotEmpty)
+                    IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                  if (hasConstraints)
                     IconButton(
                       icon: const Icon(CupertinoIcons.exclamationmark),
                       onPressed: () => widget.showConstraints(widget.toh.constraints),
@@ -237,18 +238,92 @@ class _TileToHState extends State<TileToH> {
   }
 }
 
-class EditModeTileToH extends StatelessWidget {
+class EditModeTileToH extends StatefulWidget {
   final ToH toh;
-  const EditModeTileToH({Key? key, required this.toh}) : super(key: key);
+  final void Function() enterSelectionMode;
+  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(ToH) onTapCallback;
+
+  const EditModeTileToH(
+      {Key? key,
+        required this.toh,
+        required this.enterSelectionMode,
+        required this.showConstraints,
+        required this.onTapCallback})
+      : super(key: key);
 
   @override
+  State<EditModeTileToH> createState() => _EditModeTileToHState();
+}
+
+class _EditModeTileToHState extends State<EditModeTileToH> {
+  @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: ReorderableDragStartListener(index: toh.index, child: Text(toh.name)),
-      trailing: Row(
-        children: [ReorderableDragStartListener(index: toh.index, child: toh.icon)],
-        mainAxisSize: MainAxisSize.min,
-      ),
+    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
+    final Color tohColor = tohColors[widget.toh.colorIndex];
+    final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
+    final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
+    final Color _boundaryColor = hasConstraints ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
+    final Color _textColor = hasConstraints ? const Color(0xff484848) : Colors.black;
+
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: <Widget>[
+        ListTile(
+          tileColor: _tileColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: _boundaryColor,
+              width: 3,
+            ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          onTap: () => widget.onTapCallback(widget.toh),
+          onLongPress: () {
+            setState(() {
+              widget.toh.isSelected = true;
+            });
+            widget.enterSelectionMode();
+          },
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(widget.toh.name, style: taskTextStyle.copyWith(color: _textColor),),
+              Expanded(child: Container()),
+              Row(
+                children: [
+                  if (widget.toh.timeLimit != null)
+                    const Icon(Icons.alarm),
+                  if (hasConstraints)
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.exclamationmark),
+                      onPressed: () => widget.showConstraints(widget.toh.constraints),
+                    ),
+                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                ],
+                mainAxisSize: MainAxisSize.min,
+              ),
+            ],
+          ),
+        ),
+        if (widget.toh.isHighlighted)
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: const [
+              Icon(
+                Icons.star,
+                color: Colors.black,
+                size: 24,
+              ),
+              Icon(
+                Icons.star,
+                color: Colors.amberAccent,
+                size: 22,
+              )
+            ],
+          )
+      ],
     );
   }
 }
