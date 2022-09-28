@@ -6,13 +6,16 @@ import 'helper.dart';
 enum StructureTaskActive { always, workdays, holidays }
 
 // 0 For Structure, 1 for repeating, 2 otherwise default
-final List<Color> tohColors = [];
-void initColors() {
-  tohColors.add(Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF));
-  tohColors.add(Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF));
-  tohColors.add(Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF));
-  tohColors.addAll([for (String s in myPreferences.getStringList('taskColorIds') ?? []) Color(int.parse(s))]);
+
+void initColors(){
+  structureTaskColor = Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF);
+  repeatingTaskColor = Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF);
+  defaultTaskColor = Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF);
 }
+
+late final Color structureTaskColor;
+late final Color repeatingTaskColor;
+late final Color defaultTaskColor;
 
 class Periodicity {
   List<Duration> baseOffsets;
@@ -42,7 +45,7 @@ class ToH {
   int index;
   bool isDone;
   Icon icon;
-  int colorIndex;
+  Color taskColor;
   bool isHighlighted;
   bool isSelected;
   DateTime? deadline;
@@ -59,7 +62,7 @@ class ToH {
       required this.index,
       required this.isDone,
       required this.icon,
-      required this.colorIndex,
+      required this.taskColor,
       required this.isHighlighted,
       required this.isSelected,
       this.deadline,
@@ -88,7 +91,7 @@ class StructureToH extends ToH {
       required super.index,
       required super.isDone,
       required super.icon,
-      required super.colorIndex,
+      required super.taskColor,
       required super.isHighlighted,
       required super.isSelected,
       super.deadline,
@@ -112,7 +115,7 @@ class PeriodicToH extends ToH {
       required super.index,
       required super.isDone,
       required super.icon,
-      required super.colorIndex,
+      required super.taskColor,
       required super.isHighlighted,
       required super.isSelected,
       super.deadline,
@@ -147,7 +150,7 @@ class _TileToHState extends State<TileToH> {
   @override
   Widget build(BuildContext context) {
     final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
-    final Color tohColor = tohColors[widget.toh.colorIndex];
+    final Color tohColor = widget.toh.taskColor;
     final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
     final Color _boundaryColor = hasConstraints ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
@@ -264,7 +267,7 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
   @override
   Widget build(BuildContext context) {
     final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
-    final Color tohColor = tohColors[widget.toh.colorIndex];
+    final Color tohColor = widget.toh.taskColor;
     final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
     final Color _boundaryColor = hasConstraints ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
