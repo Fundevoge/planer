@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 Color invert(Color color) {
@@ -11,4 +13,10 @@ Color invert(Color color) {
 Color greyedColor(Color color){
   HSLColor hsl = HSLColor.fromColor(color);
   return HSLColor.fromAHSL(hsl.alpha, hsl.hue, 0.3, 0.6).toColor();
+}
+
+final Random random = Random();
+
+String generateUid(){
+  return "${DateTime.now().microsecondsSinceEpoch}${random.nextInt(1<<32)}";
 }

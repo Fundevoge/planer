@@ -32,6 +32,7 @@ class TDConstraint {
 //  Name, Notes, timerduration?, subtasks?, listname, Date?, index, is_done, icon, color, isHighlighted, deadline?,
 //  is_repeating, constraints?
 class ToH {
+  String uid = generateUid();
   String name;
   String notes;
   Duration? timeLimit;
@@ -148,55 +149,78 @@ class _TileToHState extends State<TileToH> {
     final Color tohColor = tohColors[widget.toh.colorIndex];
     final Color _tileColor = widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
-    final Color _boundaryColor = widget.toh.constraints?.isNotEmpty ?? false
-        ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
+    final Color _boundaryColor =
+        widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
 
-    return ListTile(
-      tileColor: _tileColor,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(
-            color: _boundaryColor,
-            width: 3,),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      onTap: () => widget.onTapCallback(widget.toh),
-      onLongPress: () {
-        setState(() {
-          widget.toh.isSelected = true;
-        });
-        widget.enterSelectionMode();
-      },
-      leading: widget.toh.deadlineOverdue()
-          ? const Icon(
-              Icons.warning_amber_rounded,
-              color: Colors.amber,
-            )
-          : const Icon(
-              Icons.schedule,
-              color: Colors.lightGreen,
+    return Stack(
+      key: Key(widget.toh.uid),
+      alignment: AlignmentDirectional.topEnd,
+      children: <Widget>[
+        ListTile(
+          tileColor: _tileColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: _boundaryColor,
+              width: 3,
             ),
-      title: ReorderableDragStartListener(index: widget.toh.index, child: Text(widget.toh.name)),
-      trailing: Row(
-        children: [
-          if (widget.toh.timeLimit != null)
-            IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
-          if ((widget.toh.constraints ?? []).isNotEmpty)
-            IconButton(
-              icon: const Icon(CupertinoIcons.exclamationmark),
-              onPressed: () => widget.showConstraints(widget.toh.constraints),
-            ),
-          ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-          Checkbox(
-              value: widget.toh.isDone,
-              onChanged: (val) {
-                setState(() {
-                  widget.toh.isDone = val!;
-                });
-                widget.moveToDone(widget.toh.index);
-              }),
-        ],
-        mainAxisSize: MainAxisSize.min,
-      ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          onTap: () => widget.onTapCallback(widget.toh),
+          onLongPress: () {
+            setState(() {
+              widget.toh.isSelected = true;
+            });
+            widget.enterSelectionMode();
+          },
+          leading: widget.toh.deadlineOverdue()
+              ? const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.amber,
+                )
+              : const Icon(
+                  Icons.schedule,
+                  color: Colors.lightGreen,
+                ),
+          title: ReorderableDragStartListener(index: widget.toh.index, child: Text(widget.toh.name)),
+          trailing: Row(
+            children: [
+              if (widget.toh.timeLimit != null)
+                IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
+              if ((widget.toh.constraints ?? []).isNotEmpty)
+                IconButton(
+                  icon: const Icon(CupertinoIcons.exclamationmark),
+                  onPressed: () => widget.showConstraints(widget.toh.constraints),
+                ),
+              ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+              Checkbox(
+                  value: widget.toh.isDone,
+                  onChanged: (val) {
+                    setState(() {
+                      widget.toh.isDone = val!;
+                    });
+                    widget.moveToDone(widget.toh.index);
+                  }),
+            ],
+            mainAxisSize: MainAxisSize.min,
+          ),
+        ),
+        if (widget.toh.isHighlighted)
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: const [
+              Icon(
+                Icons.star,
+                color: Colors.black,
+                size: 14,
+              ),
+              Icon(
+                Icons.star,
+                color: Colors.amberAccent,
+                size: 12,
+              )
+            ],
+          )
+      ],
     );
   }
 }
