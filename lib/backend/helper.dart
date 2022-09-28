@@ -20,3 +20,5 @@ final Random random = Random();
 Key generateUid(){
   return Key("${DateTime.now().microsecondsSinceEpoch}${random.nextInt(1<<32)}");
 }
+
+const TextStyle taskTextStyle = TextStyle(fontSize: 24, overflow: TextOverflow.ellipsis);

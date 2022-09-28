@@ -171,37 +171,49 @@ class _TileToHState extends State<TileToH> {
             });
             widget.enterSelectionMode();
           },
-          leading: ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.deadlineOverdue()
-              ? const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.amber,
-                )
-              : const Icon(
-                  Icons.schedule,
-                  color: Colors.lightGreen,
-                ),
-          ),
-          title: Text(widget.toh.name),
-          trailing: Row(
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (widget.toh.timeLimit != null)
-                IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
-              if ((widget.toh.constraints ?? []).isNotEmpty)
-                IconButton(
-                  icon: const Icon(CupertinoIcons.exclamationmark),
-                  onPressed: () => widget.showConstraints(widget.toh.constraints),
-                ),
-              ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-              Checkbox(
-                  value: widget.toh.isDone,
-                  onChanged: (val) {
-                    setState(() {
-                      widget.toh.isDone = val!;
-                    });
-                    widget.moveToDone(widget.toh.index);
-                  }),
+              ReorderableDragStartListener(
+                index: widget.toh.index,
+                child: widget.toh.deadlineOverdue()
+                    ? const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.amber,
+                      )
+                    : const Icon(
+                        Icons.schedule,
+                        color: Colors.lightGreen,
+                      ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Text(widget.toh.name, style: taskTextStyle,),
+              Expanded(child: Container()),
+              Row(
+                children: [
+                  if (widget.toh.timeLimit != null)
+                    IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: widget.toh.icon),
+                  if ((widget.toh.constraints ?? []).isNotEmpty)
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.exclamationmark),
+                      onPressed: () => widget.showConstraints(widget.toh.constraints),
+                    ),
+                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                  Checkbox(
+                      value: widget.toh.isDone,
+                      onChanged: (val) {
+                        setState(() {
+                          widget.toh.isDone = val!;
+                        });
+                        widget.moveToDone(widget.toh.index);
+                      }),
+                ],
+                mainAxisSize: MainAxisSize.min,
+              ),
             ],
-            mainAxisSize: MainAxisSize.min,
           ),
         ),
         if (widget.toh.isHighlighted)
