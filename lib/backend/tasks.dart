@@ -18,7 +18,8 @@ class Periodicity {
   List<Duration> baseOffsets;
   List<Duration> rhythms;
   DateTime baseDate;
-  Periodicity(this.baseDate, this.rhythms, this.baseOffsets);
+  DateTime endDate;
+  Periodicity(this.baseDate, this.rhythms, this.baseOffsets, this.endDate);
 }
 
 class TDConstraint {
