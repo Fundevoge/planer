@@ -144,15 +144,20 @@ class TileToH extends StatefulWidget {
 class _TileToHState extends State<TileToH> {
   @override
   Widget build(BuildContext context) {
+    final Color tohColor = tohColors[widget.toh.colorIndex];
+    final Color _tileColor = widget.toh.constraints?.isNotEmpty ?? false ? greyedColor(tohColor) : tohColor;
+    final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
+    final Color _boundaryColor = widget.toh.constraints?.isNotEmpty ?? false
+        ? greyedColor(_rawBoundaryColor) : _rawBoundaryColor;
+
     return ListTile(
-      tileColor: tohColors[widget.toh.colorIndex],
+      tileColor: _tileColor,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-            color: widget.toh.isSelected ? invert(tohColors[widget.toh.colorIndex]) : tohColors[widget.toh.colorIndex],
+            color: _boundaryColor,
             width: 3,),
         borderRadius: BorderRadius.circular(5),
       ),
-      enabled: widget.toh.constraints?.isEmpty ?? true,
       onTap: () => widget.onTapCallback(widget.toh),
       onLongPress: () {
         setState(() {
