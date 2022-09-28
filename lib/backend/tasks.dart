@@ -191,12 +191,16 @@ class _TileToHState extends State<TileToH> {
               const SizedBox(
                 width: 15,
               ),
-              Text(widget.toh.name, style: taskTextStyle.copyWith(color: _textColor),),
+              Text(
+                widget.toh.name,
+                style: taskTextStyle.copyWith(color: _textColor),
+              ),
               Expanded(child: Container()),
               Row(
                 children: [
                   if (widget.toh.timeLimit != null)
-                    IconButton(onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                    IconButton(
+                        onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
                   if (hasConstraints)
                     IconButton(
                       icon: const Icon(CupertinoIcons.exclamationmark),
@@ -246,10 +250,10 @@ class EditModeTileToH extends StatefulWidget {
 
   const EditModeTileToH(
       {Key? key,
-        required this.toh,
-        required this.enterSelectionMode,
-        required this.showConstraints,
-        required this.onTapCallback})
+      required this.toh,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.onTapCallback})
       : super(key: key);
 
   @override
@@ -289,12 +293,14 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(widget.toh.name, style: taskTextStyle.copyWith(color: _textColor),),
+              Text(
+                widget.toh.name,
+                style: taskTextStyle.copyWith(color: _textColor),
+              ),
               Expanded(child: Container()),
               Row(
                 children: [
-                  if (widget.toh.timeLimit != null)
-                    const Icon(Icons.alarm),
+                  if (widget.toh.timeLimit != null) const Icon(Icons.alarm),
                   if (hasConstraints)
                     IconButton(
                       icon: const Icon(CupertinoIcons.exclamationmark),
@@ -328,20 +334,38 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
   }
 }
 
+class TaskEditor extends StatefulWidget {
+  final ToH toh;
+  final void Function(ToH) updateToH;
+
+  const TaskEditor({Key? key, required this.toh, required this.updateToH}) : super(key: key);
+
+  @override
+  State<TaskEditor> createState() => _TaskEditorState();
+}
+
+class _TaskEditorState extends State<TaskEditor> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+
+  @override
+  void initState() {
+    _nameController.text = widget.toh.name;
+    _noteController.text = widget.toh.notes;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: Column(
+          children: <Widget>[
+            TextField(controller: _nameController,),
+            TextField(controller: _noteController,decoration: const InputDecoration(hintText: 'Notizen'),),
+          ],
+        ));
+  }
+}
+
 void addTask() {}
 void markTaskDone() {}
-List<ToH> getTasks(DateTime day) {
-  return <ToH>[];
-}
-
-List<dynamic> getAllTasks() {
-  return <ToH>[];
-}
-
-ListView renderToH(bool Function(ToH) whereF) {
-  return ListView();
-}
-
-bool onList(List<ToH> tasks, String listName) {
-  return true;
-}
