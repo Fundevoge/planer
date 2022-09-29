@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:planer/backend/db_manager.dart';
+import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/backend/tasks.dart';
 

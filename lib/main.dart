@@ -1,18 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:planer/backend/db_manager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/tasks.dart';
 import 'package:planer/pages/main_page.dart';
-
 import 'backend/preference_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initPreferences();
-  initColors();
-  initIcon();
-  initTodoLists();
-  checkFirstOpen();
+  await init();
   initializeDateFormatting('de_DE').then((_) => runApp(
       MaterialApp(
             title: "Planer",
@@ -25,7 +23,29 @@ void main() async {
   );
 }
 
-void checkFirstOpen(){
-  if(myPreferences.getInt('firstOpenedYear') != null) return;
+Future<void> init() async {
+  bool doOneTimeSetup = true; await jsonStorageSetup();
+  if(doOneTimeSetup){
+    await initialOneTimeSetup();
+  }
+  await initState();
+}
+
+Future<bool> jsonStorageSetup() async {
+  final String directoryPath = (await getApplicationDocumentsDirectory()).path;
+  final File taskListFile = File("$directoryPath/taskLists.json");
+  final String contents = await taskListFile.readAsString();
+  return !contents.isNotEmpty;
+}
+
+Future<void> initialOneTimeSetup() async {
+  createTaskJson();
   myPreferences.setInt('firstOpenedYear', DateTime.now().year);
+}
+
+Future<void> initState() async {
+  await initPreferences();
+  initColors();
+  initIcon();
+  initTodoLists();
 }

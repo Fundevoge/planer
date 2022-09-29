@@ -9,7 +9,7 @@ enum StructureTaskActive { always, workdays, holidays }
 late Color structureTaskColor;
 late Color repeatingTaskColor;
 late Color defaultTaskColor;
-void initColors(){
+void initColors() {
   structureTaskColor = Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF);
   repeatingTaskColor = Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF);
   defaultTaskColor = Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF);
@@ -17,11 +17,9 @@ void initColors(){
 
 late Icon defaultIcon;
 
-void initIcon(){
+void initIcon() {
   defaultIcon = Icon(IconData(myPreferences.getInt('defaultIcon') ?? const Icon(Icons.developer_mode).icon!.codePoint));
 }
-
-
 
 class Periodicity {
   List<Duration> baseOffsets;
@@ -35,6 +33,11 @@ class TDConstraint {
   bool external;
   List<ToH>? requiredTasks;
   TDConstraint({required this.external, this.requiredTasks});
+  Map<String, dynamic> toJson() {
+    final List<Map<String, dynamic>>? jsonChildren =
+        (requiredTasks?.isNotEmpty ?? false) ? List.from([for (ToH child in requiredTasks!) child.toJson()]) : null;
+    return {"external": external, "requiredTasks": jsonChildren};
+  }
 }
 
 // Any Task or Header:
@@ -75,7 +78,7 @@ class ToH {
       this.isRepeating = false,
       this.constraints});
 
-  factory ToH.debugFactory(int index){
+  factory ToH.debugFactory(int index) {
     return ToH(
       name: "Debug Task",
       notes: "Debug Notes",
@@ -90,6 +93,32 @@ class ToH {
     if (listDate == null || deadline == null) return false;
     if (listDate!.isAfter(DateTime(deadline!.year, deadline!.month, deadline!.day))) return false;
     return true;
+  }
+
+  Map<String, dynamic> toJson() {
+    final List<Map<String, dynamic>>? jsonChildren =
+        (children?.isNotEmpty ?? false) ? List.from([for (ToH child in children!) child.toJson()]) : null;
+    final List<Map<String, dynamic>>? jsonConstraints = (constraints?.isNotEmpty ?? false)
+        ? List.from([for (TDConstraint child in constraints!) child.toJson()])
+        : null;
+    return {
+      "uid": uid.toString(),
+      "name": name,
+      "notes": notes,
+      "timeLimit": timeLimit?.inSeconds,
+      "children": jsonChildren,
+      "listName": listName,
+      "listDate": listDate?.toIso8601String(),
+      "index": index,
+      "isDone": isDone,
+      "icon": icon.icon?.codePoint,
+      "taskColor": taskColor.value,
+      "isHighlighted": isHighlighted,
+      "isSelected": isSelected,
+      "deadline": deadline?.toIso8601String(),
+      "isRepeating": isRepeating,
+      "constraints": jsonConstraints
+    };
   }
 }
 
@@ -379,11 +408,16 @@ class _TaskEditorState extends State<TaskEditor> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Column(
-          children: <Widget>[
-            TextField(controller: _nameController,),
-            TextField(controller: _noteController,decoration: const InputDecoration(hintText: 'Notizen'),),
-          ],
-        ));
+      children: <Widget>[
+        TextField(
+          controller: _nameController,
+        ),
+        TextField(
+          controller: _noteController,
+          decoration: const InputDecoration(hintText: 'Notizen'),
+        ),
+      ],
+    ));
   }
 }
 
