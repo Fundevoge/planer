@@ -38,13 +38,19 @@ class TDConstraint {
         (requiredTasks?.isNotEmpty ?? false) ? List.from([for (ToH child in requiredTasks!) child.toJson()]) : null;
     return {"external": external, "requiredTasks": jsonChildren};
   }
+
+  TDConstraint.fromJson(Map<String, dynamic> json)
+      : external = json["external"],
+        requiredTasks = json["requiredTasks"] != null
+            ? [for (Map<String, dynamic> jsonChild in json["requiredTasks"]) ToH.fromJson(jsonChild)]
+            : null;
 }
 
 // Any Task or Header:
 //  Name, Notes, timerduration?, subtasks?, listname, Date?, index, is_done, icon, color, isHighlighted, deadline?,
 //  is_repeating, constraints?
 class ToH {
-  final Key uid = generateUid();
+  final Key uid;
   String name;
   String notes;
   Duration? timeLimit;
@@ -76,7 +82,8 @@ class ToH {
       this.isSelected = false,
       this.deadline,
       this.isRepeating = false,
-      this.constraints});
+      this.constraints})
+      : uid = generateUid();
 
   factory ToH.debugFactory(int index) {
     return ToH(
@@ -120,6 +127,28 @@ class ToH {
       "constraints": jsonConstraints
     };
   }
+
+  ToH.fromJson(Map<String, dynamic> json)
+      : uid = Key(json['uid']),
+        name = json["name"],
+        notes = json["notes"],
+        timeLimit = json["timeLimit"],
+        children = json["children"] != null
+            ? [for (Map<String, dynamic> jsonChild in json["children"]) ToH.fromJson(jsonChild)]
+            : null,
+        listName = json["listName"],
+        listDate = json["listDate"] != null ? DateTime.parse(json["listDate"]) : null,
+        index = json["index"],
+        isDone = json["isDone"],
+        icon = Icon(IconData(json["icon"])),
+        taskColor = Color(json["taskColor"]),
+        isHighlighted = json["isHighlighted"],
+        isSelected = json["isSelected"],
+        deadline = json["deadline"] != null ? DateTime.parse(json["deadline"]) : null,
+        isRepeating = json["isRepeating"],
+        constraints = json["constraints"] != null
+            ? [for (Map<String, dynamic> jsonConstraint in json["constraint"]) TDConstraint.fromJson(jsonConstraint)]
+            : null;
 }
 
 // Structure (Not for task list, only backend and structure maniplator):

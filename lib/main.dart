@@ -35,7 +35,9 @@ Future<bool> jsonStorageSetup() async {
   final String directoryPath = (await getApplicationDocumentsDirectory()).path;
   final File taskListFile = File("$directoryPath/taskLists.json");
   final String contents = await taskListFile.readAsString();
-  return !contents.isNotEmpty;
+  final bool exists = !contents.isNotEmpty;
+  if(exists) initTodoLists(contents);
+  return !exists;
 }
 
 Future<void> initialOneTimeSetup() async {
@@ -47,5 +49,5 @@ Future<void> initState() async {
   await initPreferences();
   initColors();
   initIcon();
-  initTodoLists();
+  initTodoListsDebug();
 }

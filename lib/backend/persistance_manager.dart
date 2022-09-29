@@ -9,7 +9,7 @@ void createTaskJson() {
 }
 
 final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoLists = {};
-void initTodoLists() {
+void initTodoListsDebug() {
   todoLists['own'] = LinkedHashMap<DateTime, List<ToH>>(
     equals: isSameDay,
     hashCode: getHashCode,
@@ -34,50 +34,16 @@ String encodeTodoLists() {
   });
 }
 
-/*
-Future<List<Ingredient>> getIngredientsFromDb(String tableIdentifier) async {
-  final List<Map<String, dynamic>> maps = await db.query(tableIdentifier);
-  return List.generate(maps.length, (i) {
-    return Ingredient(
-      id: maps[i]['id'],
-      name: maps[i]['name'],
-      amount: maps[i]['amount'],
-      categoryIndex: maps[i]['category_id'],
-      lifetime: maps[i]['lifetime'],
-      measure: unitFromString(maps[i]['measure']),
-    );
+void initTodoLists(String encoded) {
+  Map<String, dynamic> decoded = jsonDecode(encoded);
+  todoLists.addAll({
+    for (String key in decoded.keys)
+      key: LinkedHashMap.from({
+        for (String date in decoded[key]!.keys)
+          DateTime.parse(date): [
+            for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
+              ToH.fromJson(jsonToH)]
+      })
   });
 }
 
-Future<void> insertIngredient(String tableIdentifier, Ingredient ingredient) async {
-  await db.insert(
-    tableIdentifier,
-    ingredient.toMap(),
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
-}
-
-Future<void> updateIngredient(String tableIdentifier, Ingredient ingredient) async {
-  await db.update(
-    tableIdentifier,
-    ingredient.toMap(),
-    where: 'id = ?',
-    whereArgs: [ingredient.id],
-  );
-}
-
-Future<void> deleteIngredient(String tableIdentifier, int id) async {
-  await db.delete(
-    tableIdentifier,
-    where: 'id = ?',
-    whereArgs: [id],
-  );
-}
-
-Future<List<String>> getSearchKeywordsFromDb(String tableIdentifier) async {
-  final List<Map<String, dynamic>> maps = await db.query(tableIdentifier);
-  return List.generate(maps.length, (i) {
-    return maps[i]['name'];
-  });
-}
-*/
