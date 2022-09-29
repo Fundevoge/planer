@@ -6,16 +6,22 @@ import 'helper.dart';
 enum StructureTaskActive { always, workdays, holidays }
 
 // 0 For Structure, 1 for repeating, 2 otherwise default
-
+late Color structureTaskColor;
+late Color repeatingTaskColor;
+late Color defaultTaskColor;
 void initColors(){
   structureTaskColor = Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF);
   repeatingTaskColor = Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF);
   defaultTaskColor = Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF);
 }
 
-late final Color structureTaskColor;
-late final Color repeatingTaskColor;
-late final Color defaultTaskColor;
+late Icon defaultIcon;
+
+void initIcon(){
+  defaultIcon = Icon(IconData(myPreferences.getInt('defaultIcon') ?? const Icon(Icons.developer_mode).icon!.codePoint));
+}
+
+
 
 class Periodicity {
   List<Duration> baseOffsets;
@@ -60,14 +66,25 @@ class ToH {
       required this.listName,
       this.listDate,
       required this.index,
-      required this.isDone,
+      this.isDone = false,
       required this.icon,
       required this.taskColor,
-      required this.isHighlighted,
-      required this.isSelected,
+      this.isHighlighted = false,
+      this.isSelected = false,
       this.deadline,
-      required this.isRepeating,
+      this.isRepeating = false,
       this.constraints});
+
+  factory ToH.debugFactory(int index){
+    return ToH(
+      name: "Debug Task",
+      notes: "Debug Notes",
+      listName: "Debug List",
+      index: index,
+      icon: const Icon(Icons.developer_mode),
+      taskColor: defaultTaskColor,
+    );
+  }
 
   bool deadlineOverdue() {
     if (listDate == null || deadline == null) return false;

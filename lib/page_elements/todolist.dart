@@ -1,5 +1,9 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:planer/backend/db_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
+import 'package:planer/backend/tasks.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList({Key? key, required this.title}) : super(key: key);
@@ -9,11 +13,29 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
+  late final LinkedHashMap<DateTime, List<ToH>> listsByDate;
+    DateTime displayedListDate = DateTime.now();
+
+  @override
+  void initState() {
+    listsByDate = todoLists[widget.title]!;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {},
-      children: const [],
+      children: listsByDate[DateTime.now()]!
+          .map((e) => TileToH(
+              key: e.uid,
+              toh: e,
+              moveToDone: (_) => {},
+              enterSelectionMode: () => {},
+              showConstraints: (_) => {},
+              startTimer: (_) => {},
+              onTapCallback: (_) => {}))
+          .toList(),
     );
   }
 }
@@ -74,7 +96,7 @@ class _ListAndPoolState extends State<ListAndPool> {
         children: [
           SizedBox(
             height: topHeight!,
-            child: TodoList(title: "TestList"),
+            child: TodoList(title: "own"),
           ),
           GestureDetector(
             onPanUpdate: _handleUpdate,
