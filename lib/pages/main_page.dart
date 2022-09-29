@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    views = <Widget>[const TaskCalendar(), TableComplexExample()] +
+    views = <Widget>[const TaskCalendar(), const TableComplexExample(), const ListAndPool()] +
         _navigationBarItems.sublist(2).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
     super.initState();
   }
