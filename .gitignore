@@ -47,4 +47,4 @@ app.*.map.json
 
 # Testing directory
 /lib/test
-next.txt
+private_files/next.txt
