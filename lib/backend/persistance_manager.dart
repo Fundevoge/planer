@@ -99,16 +99,17 @@ void initOtherToHs(String encodedS, String encodedP, String encodedT){
   templateToHs.addAll([for(Map<String, dynamic> jsonT in jsonDecode(encodedT)) ToH.fromJson(jsonT)]);
 }
 
-void saveTodoLists(){
-  taskListsFile.writeAsString(jsonEncode(encodeTodoLists()));
+void saveTodoLists() async{
+  await taskListsFile.writeAsString(jsonEncode(encodeTodoLists()));
 }
 
-void saveTodoPools(){
-  taskPoolsFile.writeAsString(jsonEncode(encodeTodoLists()));
+void saveTodoPools()async{
+  await taskPoolsFile.writeAsString(jsonEncode(encodeTodoLists()));
 }
 
-void saveOtherToHs(){
-  structureToHFile.writeAsString(jsonEncode([for(StructureToH s in structureToHs) s.toJson()]));
-  periodicToHFile.writeAsString(jsonEncode([for(PeriodicToH p in periodicToHs) p.toJson()]));
-  templateToHFile.writeAsString(jsonEncode([for(ToH t in templateToHs) t.toJson()]));
+void saveOtherToHs()async{
+
+  await structureToHFile.writeAsString(jsonEncode([for(StructureToH s in structureToHs) s.toJson()]));
+  await periodicToHFile.writeAsString(jsonEncode([for(PeriodicToH p in periodicToHs) p.toJson()]));
+  await templateToHFile.writeAsString(jsonEncode([for(ToH t in templateToHs) t.toJson()]));
 }
