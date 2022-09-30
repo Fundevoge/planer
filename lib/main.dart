@@ -33,10 +33,16 @@ Future<void> init() async {
 
 Future<bool> jsonStorageSetup() async {
   final String directoryPath = (await getApplicationDocumentsDirectory()).path;
-  final File taskListFile = File("$directoryPath/taskLists.json");
-  final String contents = await taskListFile.readAsString();
-  final bool exists = !contents.isNotEmpty;
-  if(exists) initTodoLists(contents);
+  taskListsFile = File("$directoryPath/taskLists.json");
+  taskPoolsFile = File("$directoryPath/taskPools.json");
+  structureToHFile = File("$directoryPath/structureTasks.json");
+  periodicToHFile = File("$directoryPath/periodicTasks.json");
+  templateToHFile = File("$directoryPath/templateTasks.json");
+  final String taskListContents = await taskListsFile.readAsString();
+  final String taskPoolsContents = await taskPoolsFile.readAsString();
+  final bool exists = !taskListContents.isNotEmpty;
+  if(exists) initTodoLists(taskListContents);
+  if(exists) initTodoPools(taskPoolsContents);
   return !exists;
 }
 

@@ -53,7 +53,47 @@ void initTodoLists(String encoded) {
   });
 }
 
+final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoPools = {};
+void initTodoPoolsDebug() {
+  todoPools['own'] = LinkedHashMap<DateTime, List<ToH>>(
+    equals: isSameDay,
+    hashCode: getHashCode,
+  )..addAll({
+    DateTime.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
+  });
+}
+
+String encodeTodoPools() {
+  return jsonEncode({
+    for (String key in todoPools.keys)
+      key: {
+        for (DateTime d in todoPools[key]!.keys)
+          d.toIso8601String(): [
+            for (ToH toh in todoPools[key]![d]!)
+              toh.toJson()]
+      }
+  });
+}
+
+void initTodoPools(String encoded) {
+  Map<String, dynamic> decoded = jsonDecode(encoded);
+  todoPools.addAll({
+    for (String key in decoded.keys)
+      key: LinkedHashMap.from({
+        for (String date in decoded[key]!.keys)
+          DateTime.parse(date): [
+            for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
+              ToH.fromJson(jsonToH)]
+      })
+  });
+}
+
 final List<StructureToH> structureToHs = [];
 final List<PeriodicToH> periodicToHs = [];
 final List<ToH> templateToHs = [];
 
+late final File taskListsFile;
+late final File taskPoolsFile;
+late final File structureToHFile;
+late final File periodicToHFile;
+late final File templateToHFile;
