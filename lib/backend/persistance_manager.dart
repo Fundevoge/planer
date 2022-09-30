@@ -108,7 +108,6 @@ void saveTodoPools()async{
 }
 
 void saveOtherToHs()async{
-
   await structureToHFile.writeAsString(jsonEncode([for(StructureToH s in structureToHs) s.toJson()]));
   await periodicToHFile.writeAsString(jsonEncode([for(PeriodicToH p in periodicToHs) p.toJson()]));
   await templateToHFile.writeAsString(jsonEncode([for(ToH t in templateToHs) t.toJson()]));
