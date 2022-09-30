@@ -8,13 +8,19 @@ void createTaskJson() {
   //db.execute("CREATE TABLE todoListNames(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, UNIQUE(name)");
   //db.execute("CREATE TABLE tohs(uid INTEGER PRIMARY KEY, name TEXT, notes TEXT, timeLimit INT, ");
 }
-
-late final File taskListFile;
-late final File structureTaskFile;
-late final File repeatingTaskFile;
-late final File templateTaskFile;
-
 final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoLists = {};
+final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoPools = {};
+final List<StructureToH> structureToHs = [];
+final List<PeriodicToH> periodicToHs = [];
+final List<ToH> templateToHs = [];
+
+late final File taskListsFile;
+late final File taskPoolsFile;
+late final File structureToHFile;
+late final File periodicToHFile;
+late final File templateToHFile;
+
+
 void initTodoListsDebug() {
   todoLists['own'] = LinkedHashMap<DateTime, List<ToH>>(
     equals: isSameDay,
@@ -53,7 +59,6 @@ void initTodoLists(String encoded) {
   });
 }
 
-final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoPools = {};
 void initTodoPoolsDebug() {
   todoPools['own'] = LinkedHashMap<DateTime, List<ToH>>(
     equals: isSameDay,
@@ -88,12 +93,22 @@ void initTodoPools(String encoded) {
   });
 }
 
-final List<StructureToH> structureToHs = [];
-final List<PeriodicToH> periodicToHs = [];
-final List<ToH> templateToHs = [];
+void initOtherToHs(String encodedS, String encodedP, String encodedT){
+  structureToHs.addAll([for(Map<String, dynamic> jsonS in jsonDecode(encodedS)) StructureToH.fromJson(jsonS)]);
+  periodicToHs.addAll([for(Map<String, dynamic> jsonP in jsonDecode(encodedP)) PeriodicToH.fromJson(jsonP)]);
+  templateToHs.addAll([for(Map<String, dynamic> jsonT in jsonDecode(encodedT)) ToH.fromJson(jsonT)]);
+}
 
-late final File taskListsFile;
-late final File taskPoolsFile;
-late final File structureToHFile;
-late final File periodicToHFile;
-late final File templateToHFile;
+void saveTodoLists(){
+  taskListsFile.writeAsString(jsonEncode(encodeTodoLists()));
+}
+
+void saveTodoPools(){
+  taskPoolsFile.writeAsString(jsonEncode(encodeTodoLists()));
+}
+
+void saveOtherToHs(){
+  structureToHFile.writeAsString(jsonEncode([for(StructureToH s in structureToHs) s.toJson()]));
+  periodicToHFile.writeAsString(jsonEncode([for(PeriodicToH p in periodicToHs) p.toJson()]));
+  templateToHFile.writeAsString(jsonEncode([for(ToH t in templateToHs) t.toJson()]));
+}

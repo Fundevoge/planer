@@ -34,15 +34,21 @@ Future<void> init() async {
 Future<bool> jsonStorageSetup() async {
   final String directoryPath = (await getApplicationDocumentsDirectory()).path;
   taskListsFile = File("$directoryPath/taskLists.json");
-  taskPoolsFile = File("$directoryPath/taskPools.json");
-  structureToHFile = File("$directoryPath/structureTasks.json");
-  periodicToHFile = File("$directoryPath/periodicTasks.json");
-  templateToHFile = File("$directoryPath/templateTasks.json");
   final String taskListContents = await taskListsFile.readAsString();
+  taskPoolsFile = File("$directoryPath/taskPools.json");
   final String taskPoolsContents = await taskPoolsFile.readAsString();
+  structureToHFile = File("$directoryPath/structureTasks.json");
+  final String structureToHContents = await taskPoolsFile.readAsString();
+  periodicToHFile = File("$directoryPath/periodicTasks.json");
+  final String periodicToHContents = await taskPoolsFile.readAsString();
+  templateToHFile = File("$directoryPath/templateTasks.json");
+  final String templateToH = await taskPoolsFile.readAsString();
   final bool exists = !taskListContents.isNotEmpty;
-  if(exists) initTodoLists(taskListContents);
-  if(exists) initTodoPools(taskPoolsContents);
+  if(exists) {
+    initTodoLists(taskListContents);
+    initTodoPools(taskPoolsContents);
+    initOtherToHs(structureToHContents, periodicToHContents, templateToH);
+  }
   return !exists;
 }
 

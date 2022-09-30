@@ -27,6 +27,20 @@ class Periodicity {
   DateTime baseDate;
   DateTime endDate;
   Periodicity(this.baseDate, this.rhythms, this.baseOffsets, this.endDate);
+  Map<String, dynamic> toJson() {
+    return {
+      "baseDate": baseDate.toIso8601String(),
+      "endDate": endDate.toIso8601String(),
+      "rhythms": [for (Duration r in rhythms) r.inSeconds],
+      "baseOffsets": [for (Duration b in baseOffsets) b.inSeconds]
+    };
+  }
+
+  Periodicity.fromJson(Map<String, dynamic> json)
+      : baseDate = DateTime.parse(json["baseDate"]),
+        endDate = DateTime.parse(json["endDate"]),
+        rhythms = [for (String s in json["rhythms"]) Duration(seconds: int.parse(s))],
+        baseOffsets = [for (String s in json["baseOffsets"]) Duration(seconds: int.parse(s))];
 }
 
 class TDConstraint {
@@ -153,50 +167,34 @@ class ToH {
 
 // Structure (Not for task list, only backend and structure maniplator):
 //  Whenactive
-class StructureToH extends ToH {
+class StructureToH {
   StructureTaskActive whenActive;
+  final ToH toh;
 
-  StructureToH(
-      {required super.name,
-      required super.notes,
-      super.timeLimit,
-      super.children,
-      required super.listName,
-      super.listDate,
-      required super.index,
-      required super.isDone,
-      required super.icon,
-      required super.taskColor,
-      required super.isHighlighted,
-      required super.isSelected,
-      super.deadline,
-      required super.isRepeating,
-      super.constraints,
-      required this.whenActive});
+  StructureToH({required this.toh, required this.whenActive});
+  Map<String, dynamic> toJson() {
+    return {"whenActive": whenActive.index, "toh": toh.toJson()};
+  }
+
+  StructureToH.fromJson(Map<String, dynamic> json)
+      : whenActive = StructureTaskActive.values.elementAt(json["whenActive"]),
+        toh = ToH.fromJson(json["toh"]);
 }
 
 // Repeating (Not for task list, only backend and periodicity maniplator):
 //  Periodicity(Rhythm, Base_Date)
-class PeriodicToH extends ToH {
+class PeriodicToH {
   Periodicity periodicity;
+  final ToH toh;
 
-  PeriodicToH(
-      {required super.name,
-      required super.notes,
-      super.timeLimit,
-      super.children,
-      required super.listName,
-      super.listDate,
-      required super.index,
-      required super.isDone,
-      required super.icon,
-      required super.taskColor,
-      required super.isHighlighted,
-      required super.isSelected,
-      super.deadline,
-      required super.isRepeating,
-      super.constraints,
-      required this.periodicity});
+  PeriodicToH({required this.toh, required this.periodicity});
+  Map<String, dynamic> toJson() {
+    return {"periodicity": periodicity.toJson(), "toh": toh.toJson()};
+  }
+
+  PeriodicToH.fromJson(Map<String, dynamic> json)
+      : periodicity = Periodicity.fromJson(json["periodicity"]),
+        toh = ToH.fromJson(json["toh"]);
 }
 
 class TileToH extends StatefulWidget {
