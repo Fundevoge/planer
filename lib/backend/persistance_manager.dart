@@ -64,7 +64,7 @@ String encodeTodoLists() {
 }
 
 void initTodoLists(String encoded) {
-  Map<String, dynamic> decoded = jsonDecode(jsonDecode(encoded));
+  Map<String, dynamic> decoded = jsonDecode(encoded);
   todoLists.addAll({
     for (String key in decoded.keys)
       key: LinkedHashMap.from({
