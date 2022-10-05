@@ -33,28 +33,38 @@ Future<void> init() async {
 }
 
 Future<bool> jsonStorageSetup() async {
+
   final String directoryPath = (await getApplicationDocumentsDirectory()).path;
   taskListsFile = File("$directoryPath/taskLists.json");
-  final String taskListContents = await taskListsFile.readAsString();
   taskPoolsFile = File("$directoryPath/taskPools.json");
-  final String taskPoolsContents = await taskPoolsFile.readAsString();
   structureToHFile = File("$directoryPath/structureTasks.json");
-  final String structureToHContents = await taskPoolsFile.readAsString();
   periodicToHFile = File("$directoryPath/periodicTasks.json");
-  final String periodicToHContents = await taskPoolsFile.readAsString();
   templateToHFile = File("$directoryPath/templateTasks.json");
-  final String templateToH = await taskPoolsFile.readAsString();
-  final bool exists = !taskListContents.isNotEmpty;
+
+  final bool exists = await taskListsFile.exists();
+
   if(exists) {
+    final String taskListContents = await taskListsFile.readAsString();
+    final String taskPoolsContents = await taskPoolsFile.readAsString();
+    final String structureToHContents = await taskPoolsFile.readAsString();
+    final String periodicToHContents = await taskPoolsFile.readAsString();
+    final String templateToH = await taskPoolsFile.readAsString();
     initTodoLists(taskListContents);
     initTodoPools(taskPoolsContents);
     initOtherToHs(structureToHContents, periodicToHContents, templateToH);
+  }
+  else{
+    await taskListsFile.create(recursive: true);
+    await taskPoolsFile.create(recursive: true);
+    await structureToHFile.create(recursive: true);
+    await periodicToHFile.create(recursive: true);
+    await templateToHFile.create(recursive: true);
+    await createJsons();
   }
   return !exists;
 }
 
 Future<void> initialOneTimeSetup() async {
-  createJsons();
   myPreferences.setInt('firstOpenedYear', DateTime.now().year);
 }
 

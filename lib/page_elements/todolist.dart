@@ -13,7 +13,7 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-  late final LinkedHashMap<DateTime, List<ToH>> listsByDate;
+  late final LinkedHashMap<Date, List<ToH>> listsByDate;
     DateTime displayedListDate = DateTime.now();
 
   @override

@@ -4,13 +4,30 @@ import 'dart:io';
 import 'package:planer/backend/tasks.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-void createJsons() {
-  saveTodoLists();
-  saveTodoPools();
-  saveOtherToHs();
+class Date{
+  final int year;
+  final int month;
+  final int day;
+  Date(this.day, this.month, this.year);
+  Date.fromDateTime(DateTime dateTime) : year = dateTime.year, month = dateTime.month, day = dateTime.day;
+  @override
+  String toString(){
+    return "$day.$month.$year";
+  }
+  factory Date.fromString(String s) {
+    List<String> subStrings = s.split(".");
+        return Date(int.parse(subStrings[0]), int.parse(subStrings[1]), int.parse(subStrings[2]));
+  }
 }
-final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoLists = {};
-final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoPools = {};
+
+Future<void> createJsons() async{
+  todoLists.addAll({"own" : LinkedHashMap.from({DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): []})});
+  await saveTodoLists();
+  await saveTodoPools();
+  await saveOtherToHs();
+}
+final Map<String, LinkedHashMap<Date, List<ToH>>> todoLists = {};
+final Map<String, LinkedHashMap<Date, List<ToH>>> todoPools = {};
 final List<StructureToH> structureToHs = [];
 final List<PeriodicToH> periodicToHs = [];
 final List<ToH> templateToHs = [];
@@ -23,15 +40,15 @@ late final File templateToHFile;
 
 
 void initTodoListsDebug() {
-  todoLists['own'] = LinkedHashMap<DateTime, List<ToH>>(
-    equals: isSameDay,
+  todoLists['own'] = LinkedHashMap<Date, List<ToH>>(
+    equals: isSameDate,
     hashCode: getHashCode,
   )..addAll({
-      DateTime.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
+      Date.fromDateTime(DateTime.now()): [ToH.debugFactory(0), ToH.debugFactory(1)]
     });
 }
 
-int getHashCode(DateTime key) {
+int getHashCode(Date key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
@@ -39,8 +56,8 @@ String encodeTodoLists() {
   return jsonEncode({
     for (String key in todoLists.keys)
       key: {
-        for (DateTime d in todoLists[key]!.keys)
-          d.toIso8601String(): [
+        for (Date d in todoLists[key]!.keys)
+          d.toString(): [
             for (ToH toh in todoLists[key]![d]!)
               toh.toJson()]
     }
@@ -61,20 +78,27 @@ void initTodoLists(String encoded) {
 }
 
 void initTodoPoolsDebug() {
-  todoPools['own'] = LinkedHashMap<DateTime, List<ToH>>(
-    equals: isSameDay,
+  todoPools['own'] = LinkedHashMap<Date, List<ToH>>(
+    equals: isSameDate,
     hashCode: getHashCode,
   )..addAll({
-    DateTime.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
+    Date.fromDateTime(DateTime.now()): [ToH.debugFactory(0), ToH.debugFactory(1)]
   });
+}
+
+bool isSameDate(Date? a, Date? b) {
+  if (a == null || b == null) {
+    return false;
+  }
+  return a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
 String encodeTodoPools() {
   return jsonEncode({
     for (String key in todoPools.keys)
       key: {
-        for (DateTime d in todoPools[key]!.keys)
-          d.toIso8601String(): [
+        for (Date d in todoPools[key]!.keys)
+          d.toString(): [
             for (ToH toh in todoPools[key]![d]!)
               toh.toJson()]
       }
@@ -100,15 +124,15 @@ void initOtherToHs(String encodedS, String encodedP, String encodedT){
   templateToHs.addAll([for(Map<String, dynamic> jsonT in jsonDecode(encodedT)) ToH.fromJson(jsonT)]);
 }
 
-void saveTodoLists() async{
+Future<void> saveTodoLists() async{
   await taskListsFile.writeAsString(jsonEncode(encodeTodoLists()));
 }
 
-void saveTodoPools()async{
+Future<void> saveTodoPools()async{
   await taskPoolsFile.writeAsString(jsonEncode(encodeTodoLists()));
 }
 
-void saveOtherToHs()async{
+Future<void> saveOtherToHs()async{
   await structureToHFile.writeAsString(jsonEncode([for(StructureToH s in structureToHs) s.toJson()]));
   await periodicToHFile.writeAsString(jsonEncode([for(PeriodicToH p in periodicToHs) p.toJson()]));
   await templateToHFile.writeAsString(jsonEncode([for(ToH t in templateToHs) t.toJson()]));

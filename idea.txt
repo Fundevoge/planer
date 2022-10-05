@@ -91,6 +91,7 @@ TODO: Additional features
  -> Automatic icon based on name -> set once automatically unless set by user per new task
     => not for multiple tasks; default icon: empty
  -> When new day viewed: only save if modified
+ -> default created lists: own->today, pool: td, structure: default, templates: none, repeating: none
 
 
 TODO: TASK App as Game
