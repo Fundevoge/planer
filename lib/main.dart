@@ -46,9 +46,9 @@ Future<bool> jsonStorageSetup() async {
   if(exists) {
     final String taskListContents = await taskListsFile.readAsString();
     final String taskPoolsContents = await taskPoolsFile.readAsString();
-    final String structureToHContents = await taskPoolsFile.readAsString();
-    final String periodicToHContents = await taskPoolsFile.readAsString();
-    final String templateToH = await taskPoolsFile.readAsString();
+    final String structureToHContents = await structureToHFile.readAsString();
+    final String periodicToHContents = await periodicToHFile.readAsString();
+    final String templateToH = await templateToHFile.readAsString();
     initTodoLists(taskListContents);
     initTodoPools(taskPoolsContents);
     initOtherToHs(structureToHContents, periodicToHContents, templateToH);
