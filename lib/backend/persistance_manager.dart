@@ -64,12 +64,12 @@ String encodeTodoLists() {
 }
 
 void initTodoLists(String encoded) {
-  Map<String, dynamic> decoded = jsonDecode(encoded);
+  Map<String, dynamic> decoded = jsonDecode(jsonDecode(encoded));
   todoLists.addAll({
     for (String key in decoded.keys)
       key: LinkedHashMap.from({
         for (String date in decoded[key]!.keys)
-          DateTime.parse(date): [
+          Date.fromString(date): [
             for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
               ToH.fromJson(jsonToH)]
       })
@@ -110,7 +110,7 @@ void initTodoPools(String encoded) {
     for (String key in decoded.keys)
       key: LinkedHashMap.from({
         for (String date in decoded[key]!.keys)
-          DateTime.parse(date): [
+          Date.fromString(date): [
             for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
               ToH.fromJson(jsonToH)]
       })
@@ -124,11 +124,11 @@ void initOtherToHs(String encodedS, String encodedP, String encodedT){
 }
 
 Future<void> saveTodoLists() async{
-  await taskListsFile.writeAsString(jsonEncode(encodeTodoLists()));
+  await taskListsFile.writeAsString(encodeTodoLists());
 }
 
 Future<void> saveTodoPools()async{
-  await taskPoolsFile.writeAsString(jsonEncode(encodeTodoLists()));
+  await taskPoolsFile.writeAsString(encodeTodoLists());
 }
 
 Future<void> saveOtherToHs()async{

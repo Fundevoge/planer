@@ -26,7 +26,7 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {},
-      children: listsByDate[DateTime.now()]!
+      children: listsByDate[Date.fromDateTime(DateTime.now())]!
           .map((e) => TileToH(
               key: e.uid,
               toh: e,
