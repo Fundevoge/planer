@@ -21,16 +21,16 @@ class Date{
 }
 
 Future<void> createJsons() async{
-  todoLists.addAll({"own" : LinkedHashMap.from({DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): []})});
+  todoLists.addAll({"own" : LinkedHashMap.from({Date.fromDateTime(DateTime.now()): <ToH>[]})});
   await saveTodoLists();
   await saveTodoPools();
   await saveOtherToHs();
 }
 final Map<String, LinkedHashMap<Date, List<ToH>>> todoLists = {};
 final Map<String, LinkedHashMap<Date, List<ToH>>> todoPools = {};
-final List<StructureToH> structureToHs = [];
-final List<PeriodicToH> periodicToHs = [];
-final List<ToH> templateToHs = [];
+final List<StructureToH> structureToHs = <StructureToH>[];
+final List<PeriodicToH> periodicToHs = <PeriodicToH>[];
+final List<ToH> templateToHs = <ToH>[];
 
 late final File taskListsFile;
 late final File taskPoolsFile;
