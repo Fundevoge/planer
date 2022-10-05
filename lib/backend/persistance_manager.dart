@@ -118,7 +118,6 @@ void initTodoPools(String encoded) {
 }
 
 void initOtherToHs(String encodedS, String encodedP, String encodedT){
-  print("Structure ToH decoded ${jsonDecode(encodedS)}, type: ${jsonDecode(encodedS).runtimeType}");
   structureToHs.addAll([for(Map<String, dynamic> jsonS in jsonDecode(encodedS)) StructureToH.fromJson(jsonS)]);
   periodicToHs.addAll([for(Map<String, dynamic> jsonP in jsonDecode(encodedP)) PeriodicToH.fromJson(jsonP)]);
   templateToHs.addAll([for(Map<String, dynamic> jsonT in jsonDecode(encodedT)) ToH.fromJson(jsonT)]);
