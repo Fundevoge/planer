@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:planer/backend/tasks.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-void createTaskJson() {
-  //db.execute("CREATE TABLE todoListNames(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, UNIQUE(name)");
-  //db.execute("CREATE TABLE tohs(uid INTEGER PRIMARY KEY, name TEXT, notes TEXT, timeLimit INT, ");
+void createJsons() {
+  saveTodoLists();
+  saveTodoPools();
+  saveOtherToHs();
 }
 final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoLists = {};
 final Map<String, LinkedHashMap<DateTime, List<ToH>>> todoPools = {};
