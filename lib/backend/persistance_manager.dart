@@ -21,6 +21,7 @@ class Date{
 
 Future<void> createJsons() async{
   todoLists.addAll({"own" : LinkedHashMap.from({Date.fromDateTime(DateTime.now()): <ToH>[]})});
+  initTodoListsDebug();
   await saveTodoLists();
   await saveTodoPools();
   await saveOtherToHs();

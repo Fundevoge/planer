@@ -71,5 +71,4 @@ Future<void> initialOneTimeSetup() async {
 initState() {
   initColors();
   initIcon();
-  initTodoListsDebug();
 }
