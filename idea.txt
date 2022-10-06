@@ -1,6 +1,7 @@
 Basic Idea: Ablauf oft nicht stündlich geregelt
 -> Flexibilität
 -> Wenigier Willensstärke erforderlich, wenn Tag schon vorgeplant (Ego deplpetion)
+-> Auch indem man tasks in so viele subtasks runterbrechen kann wie man will
 -> Dinge Umsetzen die wichtig sind muss keinen Spaß machen
 -> Einfacheres Habit-building durch fixe Zeitpunkte im Tagesablauf / "Trigger"
 -> Helfen herauszufinden, was einen praktisch daran hindert etwas zu tun und es zu überwinden
@@ -92,7 +93,18 @@ TODO: Additional features
     => not for multiple tasks; default icon: empty
  -> When new day viewed: only save if modified
  -> default created lists: own->today, pool: td, structure: default, templates: none, repeating: none
-
+ -> share template/task as file / push to notification receivers
+    => Drag into position
+ -> vordefinierte color schemes
+ -> templates als pool
+ -> Meals 8 13 18 Uhr
+ -> Next task only: deepest subtask of first header -> next tasks on same level ->step out
+ -> anchor repeating tasks relative to one another if same rhythm etc or to structure
+TODO: Task Enter dialog & Check on Title update
+ -> Constraints: begin with V; after task to constrain; if all: error
+ -> Date /Time: end with it; also morgen, übermorgen, ... am anfang/ende
+ -> automatic indentation
+ -> Letzte Zeile nur S: Template
 
 TODO: TASK App as Game
  -> Unlock new features for detailled planning
