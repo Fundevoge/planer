@@ -9,6 +9,7 @@ class Date{
   final int day;
   Date(this.day, this.month, this.year);
   Date.fromDateTime(DateTime dateTime) : year = dateTime.year, month = dateTime.month, day = dateTime.day;
+  factory Date.now() {return Date.fromDateTime(DateTime.now());}
   @override
   String toString(){
     return "$day.$month.$year";
@@ -20,14 +21,18 @@ class Date{
 }
 
 Future<void> createJsons() async{
-  todoLists.addAll({"own" : LinkedHashMap.from({Date.fromDateTime(DateTime.now()): <ToH>[]})});
+  todoLists.addAll({"own" : LinkedHashMap.from({Date.now().toString(): <ToH>[]})});
+  todoPools.addAll({"Todo" : <ToH>[]});
+
   initTodoListsDebug();
+  initTodoPoolsDebug();
+
   await saveTodoLists();
   await saveTodoPools();
   await saveOtherToHs();
 }
-final Map<String, LinkedHashMap<Date, List<ToH>>> todoLists = {};
-final Map<String, LinkedHashMap<Date, List<ToH>>> todoPools = {};
+final Map<String, LinkedHashMap<String, List<ToH>>> todoLists = {};
+final Map<String, List<ToH>> todoPools = {};
 final List<StructureToH> structureToHs = <StructureToH>[];
 final List<PeriodicToH> periodicToHs = <PeriodicToH>[];
 final List<ToH> templateToHs = <ToH>[];
@@ -40,24 +45,17 @@ late final File templateToHFile;
 
 
 void initTodoListsDebug() {
-  todoLists['own'] = LinkedHashMap<Date, List<ToH>>(
-    equals: isSameDate,
-    hashCode: getHashCode,
-  )..addAll({
-      Date.fromDateTime(DateTime.now()): [ToH.debugFactory(0), ToH.debugFactory(1)]
+  todoLists['own'] = LinkedHashMap.from({
+      Date.now().toString(): [ToH.debugFactory(0), ToH.debugFactory(1)]
     });
-}
-
-int getHashCode(Date key) {
-  return key.day * 1000000 + key.month * 10000 + key.year;
 }
 
 String encodeTodoLists() {
   return jsonEncode({
     for (String key in todoLists.keys)
       key: {
-        for (Date d in todoLists[key]!.keys)
-          d.toString(): [
+        for (String d in todoLists[key]!.keys)
+          d: [
             for (ToH toh in todoLists[key]![d]!)
               toh.toJson()]
     }
@@ -70,7 +68,7 @@ void initTodoLists(String encoded) {
     for (String key in decoded.keys)
       key: LinkedHashMap.from({
         for (String date in decoded[key]!.keys)
-          Date.fromString(date): [
+          date: [
             for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
               ToH.fromJson(jsonToH)]
       })
@@ -78,43 +76,26 @@ void initTodoLists(String encoded) {
 }
 
 void initTodoPoolsDebug() {
-  todoPools['own'] = LinkedHashMap<Date, List<ToH>>(
-    equals: isSameDate,
-    hashCode: getHashCode,
-  )..addAll({
-    Date.fromDateTime(DateTime.now()): [ToH.debugFactory(0), ToH.debugFactory(1)]
-  });
-}
-
-bool isSameDate(Date? a, Date? b) {
-  if (a == null || b == null) {
-    return false;
-  }
-  return a.year == b.year && a.month == b.month && a.day == b.day;
+  todoPools['Todo'] = [ToH.debugFactory(0), ToH.debugFactory(1)];
 }
 
 String encodeTodoPools() {
   return jsonEncode({
     for (String key in todoPools.keys)
-      key: {
-        for (Date d in todoPools[key]!.keys)
-          d.toString(): [
-            for (ToH toh in todoPools[key]![d]!)
+      key: [
+            for (ToH toh in todoPools[key]!)
               toh.toJson()]
-      }
   });
 }
 
 void initTodoPools(String encoded) {
   Map<String, dynamic> decoded = jsonDecode(encoded);
+  print(decoded);
   todoPools.addAll({
     for (String key in decoded.keys)
-      key: LinkedHashMap.from({
-        for (String date in decoded[key]!.keys)
-          Date.fromString(date): [
-            for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
+      key: [
+            for (Map<String, dynamic> jsonToH in decoded[key]!)
               ToH.fromJson(jsonToH)]
-      })
   });
 }
 
@@ -129,7 +110,7 @@ Future<void> saveTodoLists() async{
 }
 
 Future<void> saveTodoPools()async{
-  await taskPoolsFile.writeAsString(encodeTodoLists());
+  await taskPoolsFile.writeAsString(encodeTodoPools());
 }
 
 Future<void> saveOtherToHs()async{

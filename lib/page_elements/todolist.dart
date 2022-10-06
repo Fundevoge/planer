@@ -13,8 +13,8 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-  late final LinkedHashMap<Date, List<ToH>> listsByDate;
-    DateTime displayedListDate = DateTime.now();
+  late final LinkedHashMap<String, List<ToH>> listsByDate;
+    Date displayedListDate = Date.now();
 
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {},
-      children: listsByDate[Date.fromDateTime(DateTime.now())]!
+      children: listsByDate[displayedListDate.toString()]!
           .map((e) => TileToH(
               key: e.uid,
               toh: e,

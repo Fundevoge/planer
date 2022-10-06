@@ -25,11 +25,12 @@ void main() async {
 
 Future<void> init() async {
   await initPreferences();
+  initState();
+
   bool doOneTimeSetup = await jsonStorageSetup();
   if(doOneTimeSetup){
     await initialOneTimeSetup();
   }
-  initState();
 }
 
 Future<bool> jsonStorageSetup() async {
