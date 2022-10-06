@@ -1,5 +1,7 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'helper.dart';
 
@@ -132,7 +134,7 @@ class ToH {
       "listDate": listDate?.toIso8601String(),
       "index": index,
       "isDone": isDone,
-      "icon": icon.icon?.codePoint,
+      "icon": serializeIcon(icon.icon!),
       "taskColor": taskColor.value,
       "isHighlighted": isHighlighted,
       "isSelected": isSelected,
@@ -154,7 +156,7 @@ class ToH {
         listDate = json["listDate"] != null ? DateTime.parse(json["listDate"]) : null,
         index = json["index"],
         isDone = json["isDone"],
-        icon = Icon(IconData(json["icon"])),
+        icon = Icon(deserializeIcon(json["icon"])!),
         taskColor = Color(json["taskColor"]),
         isHighlighted = json["isHighlighted"],
         isSelected = json["isSelected"],

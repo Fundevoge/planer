@@ -90,7 +90,6 @@ String encodeTodoPools() {
 
 void initTodoPools(String encoded) {
   Map<String, dynamic> decoded = jsonDecode(encoded);
-  print(decoded);
   todoPools.addAll({
     for (String key in decoded.keys)
       key: [
