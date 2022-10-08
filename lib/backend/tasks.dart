@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
@@ -403,6 +402,123 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
               Icon(
                 Icons.star,
                 color: Colors.amberAccent,
+                size: 22,
+              )
+            ],
+          )
+      ],
+    );
+  }
+}
+
+class ReadOnlyTileToH extends StatefulWidget {
+  final ToH toh;
+  final void Function() enterSelectionMode;
+  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(ToH) onTapCallback;
+  const ReadOnlyTileToH(
+      {Key? key,
+      required this.toh,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.onTapCallback})
+      : super(key: key);
+
+  @override
+  State<ReadOnlyTileToH> createState() => _ReadOnlyTileToHState();
+}
+
+class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
+  @override
+  Widget build(BuildContext context) {
+    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
+    const Color tohColor = Color(0xFF999999);
+    const Color constrainedToHColor = Color(0xFFCCCCCC);
+    const Color selectedBoundaryColor = Color(0xFF444499);
+    const Color selectedConstrainedBoundaryColor = Color(0xFF7A7AB8);
+
+    final Color _tileColor = hasConstraints ? constrainedToHColor : tohColor;
+    final Color _boundaryColor = hasConstraints
+        ? (widget.toh.isSelected ? selectedConstrainedBoundaryColor : constrainedToHColor)
+        : (widget.toh.isSelected ? selectedBoundaryColor : tohColor);
+    final Color _textColor = hasConstraints ? const Color(0xff484848) : Colors.black;
+
+    return Stack(
+      alignment: AlignmentDirectional.topEnd,
+      children: <Widget>[
+        ListTile(
+          tileColor: _tileColor,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: _boundaryColor,
+              width: 3,
+            ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          onTap: () => widget.onTapCallback(widget.toh),
+          onLongPress: () {
+            setState(() {
+              widget.toh.isSelected = true;
+            });
+            widget.enterSelectionMode();
+          },
+          title: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ReorderableDragStartListener(
+                index: widget.toh.index,
+                child: widget.toh.deadlineOverdue()
+                    ? const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Color(0xFFB8A87A),
+                      )
+                    : const Icon(
+                        Icons.schedule,
+                        color: Color(0xFF9BB87A),
+                      ),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+              Text(
+                widget.toh.name,
+                style: taskTextStyle.copyWith(color: _textColor),
+              ),
+              Expanded(child: Container()),
+              Row(
+                children: [
+                  if (widget.toh.timeLimit != null)
+                    const Icon(Icons.alarm),
+                  if (hasConstraints)
+                    IconButton(
+                      icon: const Icon(CupertinoIcons.exclamationmark),
+                      onPressed: () => widget.showConstraints(widget.toh.constraints),
+                    ),
+                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                  Checkbox(
+                      checkColor: const Color(0xFFD6D6FF),
+                      value: widget.toh.isDone,
+                      onChanged: null,
+                  ),
+                ],
+                mainAxisSize: MainAxisSize.min,
+              ),
+            ],
+          ),
+        ),
+        if (widget.toh.isHighlighted)
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: const [
+              Icon(
+                Icons.star,
+                color: Color(0xFF444444),
+                size: 24,
+              ),
+              Icon(
+                Icons.star,
+                color: Color(0xFFB8AB7A),
                 size: 22,
               )
             ],
