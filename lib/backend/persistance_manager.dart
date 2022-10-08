@@ -20,8 +20,19 @@ class Date{
   }
 }
 
+bool isSameDate(Date a, Date b){
+  return a.day == b.day && a.month == b.month && a.year == b.year;
+}
+
+int getHashCode(Date key) {
+  return key.day * 1000000 + key.month * 10000 + key.year;
+}
+
 Future<void> createJsons() async{
-  todoLists.addAll({"own" : LinkedHashMap.from({Date.now().toString(): <ToH>[]})});
+  todoLists.addAll({"own" : LinkedHashMap<Date, List<ToH>>(
+    equals: isSameDate,
+    hashCode: getHashCode,
+  )..addAll({Date.now(): <ToH>[]})});
   todoPools.addAll({"Todo" : <ToH>[]});
 
   initTodoListsDebug();
@@ -31,7 +42,7 @@ Future<void> createJsons() async{
   await saveTodoPools();
   await saveOtherToHs();
 }
-final Map<String, LinkedHashMap<String, List<ToH>>> todoLists = {};
+final Map<String, LinkedHashMap<Date, List<ToH>>> todoLists = {};
 final Map<String, List<ToH>> todoPools = {};
 final List<StructureToH> structureToHs = <StructureToH>[];
 final List<PeriodicToH> periodicToHs = <PeriodicToH>[];
@@ -45,8 +56,11 @@ late final File templateToHFile;
 
 
 void initTodoListsDebug() {
-  todoLists['own'] = LinkedHashMap.from({
-      Date.now().toString(): [ToH.debugFactory(0), ToH.debugFactory(1)]
+  todoLists['own'] = LinkedHashMap<Date, List<ToH>>(
+    equals: isSameDate,
+    hashCode: getHashCode,
+  )..addAll({
+      Date.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
     });
 }
 
@@ -54,8 +68,8 @@ String encodeTodoLists() {
   return jsonEncode({
     for (String key in todoLists.keys)
       key: {
-        for (String d in todoLists[key]!.keys)
-          d: [
+        for (Date d in todoLists[key]!.keys)
+          d.toString(): [
             for (ToH toh in todoLists[key]![d]!)
               toh.toJson()]
     }
@@ -66,9 +80,12 @@ void initTodoLists(String encoded) {
   Map<String, dynamic> decoded = jsonDecode(encoded);
   todoLists.addAll({
     for (String key in decoded.keys)
-      key: LinkedHashMap.from({
+      key: LinkedHashMap<Date, List<ToH>>(
+        equals: isSameDate,
+        hashCode: getHashCode,
+      )..addAll({
         for (String date in decoded[key]!.keys)
-          date: [
+          Date.fromString(date): [
             for (Map<String, dynamic> jsonToH in decoded[key]![date]!)
               ToH.fromJson(jsonToH)]
       })
