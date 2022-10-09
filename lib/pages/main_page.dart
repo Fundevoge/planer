@@ -15,7 +15,6 @@ class _MainPageState extends State<MainPage> {
   int _selectedPageIndex = myPreferences.getInt('lastPageIndex') ?? 0;
   final List<BottomNavigationBarItem> _navigationBarItems = const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender'),
-    BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Komplizierter Kalender'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Meine Liste'),
       ] +
       getNavBarPrefs();
@@ -30,8 +29,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    views = <Widget>[const TaskCalendar(), const ListAndPool()] +
-        _navigationBarItems.sublist(1).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
+    views = <Widget>[const TaskCalendar()] +
+        _navigationBarItems.sublist(1).map((e) => ListAndPool(title: e.label ?? 'Unbenannte Liste')).toList();
     super.initState();
   }
 

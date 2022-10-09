@@ -13,10 +13,7 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-  final LinkedHashMap<Date, List<ToH>> listsByDate = LinkedHashMap<Date, List<ToH>>(
-    equals: isSameDate,
-    hashCode: getHashCode,
-  );
+  final LinkedHashMap<Date, List<ToH>> listsByDate = LinkedHashMap<Date, List<ToH>>();
     Date displayedListDate = Date.now();
 
   @override
@@ -61,7 +58,8 @@ class _PoolState extends State<Pool> {
 }
 
 class ListAndPool extends StatefulWidget {
-  const ListAndPool({Key? key}) : super(key: key);
+  final String title;
+  const ListAndPool({Key? key, required this.title}) : super(key: key);
 
   @override
   State<ListAndPool> createState() => _ListAndPoolState();
@@ -99,7 +97,7 @@ class _ListAndPoolState extends State<ListAndPool> {
         children: [
           SizedBox(
             height: topHeight!,
-            child: TodoList(title: "own"),
+            child: TodoList(title: widget.title),
           ),
           GestureDetector(
             onPanUpdate: _handleUpdate,

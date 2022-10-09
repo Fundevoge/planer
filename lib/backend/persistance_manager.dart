@@ -47,10 +47,7 @@ int getHashCode(Date key) {
 }
 
 Future<void> createJsons() async{
-  todoLists.addAll({"own" : LinkedHashMap<Date, List<ToH>>(
-    equals: isSameDate,
-    hashCode: getHashCode,
-  )..addAll({Date.now(): <ToH>[]})});
+  todoLists.addAll({"Meine Liste" : LinkedHashMap.from({Date.now(): <ToH>[]})});
   todoPools.addAll({"Todo" : <ToH>[]});
 
   initTodoListsDebug();
@@ -74,10 +71,7 @@ late final File templateToHFile;
 
 
 void initTodoListsDebug() {
-  todoLists['own'] = LinkedHashMap<Date, List<ToH>>(
-    equals: isSameDate,
-    hashCode: getHashCode,
-  )..addAll({
+  todoLists["Meine Liste"] = LinkedHashMap.from({
       Date.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
     });
 }
