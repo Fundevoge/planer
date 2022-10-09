@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/tasks.dart';
+import 'package:planer/page_elements/taskwidgets.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList({Key? key, required this.title}) : super(key: key);
@@ -105,11 +106,11 @@ class _ListAndPoolState extends State<ListAndPool> {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Color(0xFF303030),
+                  color: const Color(0xFF303030),
                 ),
               ),
               height: 24,
-              child: InkWell(
+              child: const InkWell(
                 child: Center(
                   child: Icon(Icons.menu),
                 ),
