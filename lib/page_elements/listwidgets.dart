@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
+import 'package:planer/models/date.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
 
