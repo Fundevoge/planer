@@ -1,33 +1,24 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
-import 'package:planer/models/tasks.dart';
+import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
 
-class TodoList extends StatefulWidget {
-  const TodoList({Key? key, required this.title}) : super(key: key);
-  final String title;
+class TodoListWidget extends StatefulWidget {
+  const TodoListWidget({Key? key, required this.todoList}) : super(key: key);
+  final TodoList todoList;
   @override
-  State<TodoList> createState() => _TodoListState();
+  State<TodoListWidget> createState() => _TodoListWidgetState();
 }
 
-class _TodoListState extends State<TodoList> {
-  final LinkedHashMap<Date, List<ToH>> listsByDate = LinkedHashMap<Date, List<ToH>>();
+class _TodoListWidgetState extends State<TodoListWidget> {
     Date displayedListDate = Date.now();
-
-  @override
-  void initState() {
-    listsByDate.addAll(todoLists[widget.title]!);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
       onReorder: (int oldIndex, int newIndex) {},
-      children: listsByDate[displayedListDate]!
+      children: widget.todoList.tohs[displayedListDate]!
           .map((e) => TileToH(
               key: e.uid,
               toh: e,
@@ -41,14 +32,14 @@ class _TodoListState extends State<TodoList> {
   }
 }
 
-class Pool extends StatefulWidget {
-  const Pool({Key? key}) : super(key: key);
+class TodoPoolWidget extends StatefulWidget {
+  const TodoPoolWidget({Key? key}) : super(key: key);
 
   @override
-  State<Pool> createState() => _PoolState();
+  State<TodoPoolWidget> createState() => _TodoPoolWidgetState();
 }
 
-class _PoolState extends State<Pool> {
+class _TodoPoolWidgetState extends State<TodoPoolWidget> {
   @override
   Widget build(BuildContext context) {
     return ReorderableListView(
@@ -59,8 +50,8 @@ class _PoolState extends State<Pool> {
 }
 
 class ListAndPool extends StatefulWidget {
-  final String title;
-  const ListAndPool({Key? key, required this.title}) : super(key: key);
+  final TodoList todoList;
+  const ListAndPool({Key? key, required this.todoList, }) : super(key: key);
 
   @override
   State<ListAndPool> createState() => _ListAndPoolState();
@@ -98,7 +89,7 @@ class _ListAndPoolState extends State<ListAndPool> {
         children: [
           SizedBox(
             height: topHeight!,
-            child: TodoList(title: widget.title),
+            child: TodoListWidget(todoList: widget.todoList),
           ),
           GestureDetector(
             onPanUpdate: _handleUpdate,
@@ -119,7 +110,7 @@ class _ListAndPoolState extends State<ListAndPool> {
           ),
           SizedBox(
             height: bottomHeight!,
-            child: Pool(),
+            child: TodoPoolWidget(),
           ),
         ],
       ); // create function here to adapt to the parent widget's constraints

@@ -71,13 +71,9 @@ late final File periodicToHFile;
 late final File templateToHFile;
 
 void initTodoListsDebug() {
-  todoLists.add(TodoList(
-      tohs: LinkedHashMap.from({
-        Date.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
-      }),
-      listColor: const Color(0xFFAABBCC),
-      listIcon: const Icon(Icons.person),
-      listName: "Meine Liste"));
+  todoLists.firstWhere((e) => e.listName == "Meine Liste").tohs.addAll({
+    Date.now(): [ToH.debugFactory(0), ToH.debugFactory(1)]
+  });
 }
 
 String encodeTodoLists() {
@@ -89,9 +85,7 @@ void initTodoLists(String encoded) {
 }
 
 void initTodoPoolsDebug() {
-  todoPools.add(TodoPool(tohs: [ToH.debugFactory(0), ToH.debugFactory(1)], poolColor: const Color(0xFFAABBCC),
-      poolIcon: const Icon(Icons.person),
-      poolName: "Todos"));
+  todoPools.firstWhere((e) => e.poolName == "Todos").tohs.addAll([ToH.debugFactory(0), ToH.debugFactory(1)]);
 }
 
 String encodeTodoPools() {

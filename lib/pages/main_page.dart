@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/page_elements/calendar.dart';
 import 'package:planer/page_elements/listwidgets.dart';
@@ -15,9 +16,8 @@ class _MainPageState extends State<MainPage> {
   int _selectedPageIndex = myPreferences.getInt('lastPageIndex') ?? 0;
   final List<BottomNavigationBarItem> _navigationBarItems = const <BottomNavigationBarItem>[
         BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Meine Liste'),
       ] +
-      getNavBarPrefs();
+      todoLists.map((e) => BottomNavigationBarItem(icon: e.listIcon, label: e.listName)).toList();
   late final List<Widget> views;
 
   void _onItemTapped(int index) {
@@ -30,7 +30,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     views = <Widget>[const TaskCalendar()] +
-        _navigationBarItems.sublist(1).map((e) => ListAndPool(title: e.label ?? 'Unbenannte Liste')).toList();
+        todoLists.map((e) => ListAndPool(todoList: e,)).toList();
     super.initState();
   }
 

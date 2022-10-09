@@ -1,9 +1,8 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/tasks.dart';
+import 'package:planer/models/todolist.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../backend/preference_manager.dart';
@@ -28,8 +27,8 @@ class _TaskCalendarState extends State<TaskCalendar> {
   List<ToH> _getToHsForDay(DateTime day) {
     Date currentDate = Date.fromDateTime(day);
     List<ToH> dayToHs = <ToH>[];
-    for (LinkedHashMap<Date, List<ToH>> map in todoLists.values) {
-      dayToHs.addAll(map[currentDate] ?? []);
+    for (TodoList todoList in todoLists) {
+      dayToHs.addAll(todoList.tohs[currentDate] ?? []);
     }
     return dayToHs;
   }
