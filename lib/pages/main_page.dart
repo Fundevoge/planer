@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/page_elements/calendar.dart';
 import 'package:planer/page_elements/todolist.dart';
-import 'package:planer/test/complex_calendar.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -31,8 +30,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    views = <Widget>[const TaskCalendar(), const TableComplexExample(), const ListAndPool()] +
-        _navigationBarItems.sublist(2).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
+    views = <Widget>[const TaskCalendar(), const ListAndPool()] +
+        _navigationBarItems.sublist(1).map((e) => TodoList(title: e.label ?? 'Unbenannte Liste')).toList();
     super.initState();
   }
 
