@@ -45,10 +45,14 @@ class Date {
 }
 
 Future<void> createJsons() async {
-  todoLists.add(TodoList(tohs: LinkedHashMap.from({Date.now(): <ToH>[]}), listColor: const Color(0xFFAABBCC),
-    listIcon: const Icon(Icons.person), listName: "Meine Liste",));
-  todoPools.add(TodoPool(tohs: <ToH>[], poolColor: const Color(0xFFAABBCC), poolIcon: const Icon(Icons.person),
-      poolName: "Todos"));
+  todoLists.add(TodoList(
+    tohs: LinkedHashMap.from({Date.now(): <ToH>[]}),
+    listColor: const Color(0xFFAABBCC),
+    listIcon: const Icon(Icons.person),
+    listName: "Meine Liste",
+  ));
+  todoPools.add(TodoPool(
+      tohs: <ToH>[], poolColor: const Color(0xFFAABBCC), poolIcon: const Icon(Icons.person), poolName: "Todos"));
 
   initTodoListsDebug();
   initTodoPoolsDebug();
