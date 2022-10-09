@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'package:planer/backend/tasks.dart';
+import 'package:planer/models/tasks.dart';
 
 class Date{
   final int year;

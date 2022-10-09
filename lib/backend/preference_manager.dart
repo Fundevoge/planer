@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late final SharedPreferences myPreferences;
@@ -10,12 +12,12 @@ Future<void> initPreferences() async {
 }
 
 Icon _safeGetNavBarIcon(int index, List<Icon> _icons){
-  if(index > _icons.length) return const Icon(Icons.person);
+  if(index > _icons.length) return const Icon(Icons.group);
   return _icons[index];
 }
 
 String _safeGetNavBarTitle(int index, List<String> _titles){
-  if(index > _titles.length) return "Shared";
+  if(index > _titles.length) return "Shared $index";
   return _titles[index];
 }
 
@@ -23,9 +25,7 @@ String _safeGetNavBarTitle(int index, List<String> _titles){
 List<BottomNavigationBarItem> getNavBarPrefs(){
   List<String> listNames = myPreferences.getStringList('navBarNames') ?? <String>[];
   List<Icon> listIcons = (myPreferences.getStringList('navBarIconData') ?? <String>[])
-      .map((e) => int.parse(e))
-      .toList()
-      .map((e) => Icon(IconData(e)))
+      .map((e) => Icon(deserializeIcon(jsonDecode(e))))
       .toList();
   List<BottomNavigationBarItem> navBarPrefs = <BottomNavigationBarItem>[];
   for(int i = 0; i < max(listNames.length, listIcons.length); i++){

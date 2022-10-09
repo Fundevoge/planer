@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/page_elements/calendar.dart';
-import 'package:planer/page_elements/todolist.dart';
+import 'package:planer/page_elements/todolistwidget.dart';
 
 
 class MainPage extends StatefulWidget {

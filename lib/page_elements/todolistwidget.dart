@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/backend/preference_manager.dart';
-import 'package:planer/backend/tasks.dart';
+import 'package:planer/models/tasks.dart';
 
 class TodoList extends StatefulWidget {
   const TodoList({Key? key, required this.title}) : super(key: key);
