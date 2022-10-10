@@ -10,7 +10,7 @@ enum StructureTaskActive { always, workdays, holidays }
 late Color structureTaskColor;
 late Color repeatingTaskColor;
 late Color defaultTaskColor;
-void initColors() {
+void initTaskColors() {
   structureTaskColor = Color(myPreferences.getInt('structureTaskColor') ?? 0xFFFFFFFF);
   repeatingTaskColor = Color(myPreferences.getInt('repeatingTaskColor') ?? 0xFFFFFFFF);
   defaultTaskColor = Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF);
@@ -104,7 +104,7 @@ class ToH {
     return ToH(
       name: "Debug Task $index",
       notes: "Debug Notes",
-      listName: "Debug List",
+      listName: "Meine Liste",
       index: index,
       icon: const Icon(Icons.developer_mode),
       taskColor: defaultTaskColor,

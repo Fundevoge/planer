@@ -2,9 +2,17 @@ import 'dart:collection';
 
 import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:planer/backend/helper.dart';
+import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/date.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:flutter/material.dart';
+
+final Map<String, Color> listColors = {};
+void initListColors() {
+  for(TodoList todoList in todoLists){
+    listColors[todoList.listName] = todoList.listColor;
+  }
+}
 
 class TodoList{
   final Key uid;

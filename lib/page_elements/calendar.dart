@@ -4,6 +4,7 @@ import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/date.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
+import 'package:planer/page_elements/taskwidgets.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../backend/preference_manager.dart';
@@ -40,6 +41,27 @@ class _TaskCalendarState extends State<TaskCalendar> {
     super.dispose();
   }
 
+  Widget _buildSingleMarker(DateTime day, ToH event, double markerSize) {
+    return Container(
+          width: markerSize,
+          height: markerSize,
+          margin: const EdgeInsets.fromLTRB(0.3, 0, 0.3, 3.5),
+          decoration: BoxDecoration(
+            color: listColors[event.listName]!,
+            shape: BoxShape.circle,
+          ),
+        );
+  }
+
+  Widget? _markerBuilder(BuildContext context, DateTime day, List<ToH> events){
+    if(_getToHsForDay(day).isEmpty) return null;
+  return Align(alignment: Alignment.bottomCenter, child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: events.take(4).map((event) => _buildSingleMarker(day, event, 7.8)).toList(),
+  ),);
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -74,8 +96,8 @@ class _TaskCalendarState extends State<TaskCalendar> {
           locale: 'de_DE',
           startingDayOfWeek: StartingDayOfWeek.monday,
           headerVisible: false,
-          daysOfWeekStyle: DaysOfWeekStyle(),
           eventLoader: _getToHsForDay,
+          calendarBuilders: CalendarBuilders(markerBuilder: _markerBuilder),
           holidayPredicate: (day) {
             // Every 20th day of the month will be treated as a holiday
             return day.day == 20;
@@ -114,9 +136,12 @@ class _TaskCalendarState extends State<TaskCalendar> {
                       border: Border.all(),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: ListTile(
-                      onTap: () => print('${dayToHs[index]}'),
-                      title: Text('${dayToHs[index]}'),
+                    child: TileToH( toh: dayToHs[index],
+                      moveToDone: (int i) {  },
+                      enterSelectionMode: () {  },
+                      showConstraints: (List<TDConstraint>? c) {  },
+                      startTimer: (Duration d) {  },
+                      onTapCallback: (ToH toh) {  },
                     ),
                   );
                 },
