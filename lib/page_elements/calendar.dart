@@ -12,10 +12,15 @@ final kToday = DateTime.now();
 final kFirstDay = DateTime(myPreferences.getInt("firstOpenedYear")! - 20);
 final kLastDay = DateTime(kToday.year + 100).subtract(const Duration(days: 1));
 const CalendarStyle calendarStyle = CalendarStyle(
-    selectedDecoration: BoxDecoration(
-  color: Color(0xFF8A9DE0),
-  shape: BoxShape.circle,
-));
+  selectedDecoration: BoxDecoration(
+    color: Color(0xFF7A8DD9),
+    shape: BoxShape.circle,
+  ),
+  todayDecoration: BoxDecoration(
+    shape: BoxShape.circle,
+    color: Color(0xFFC4BAEE),
+  ),
+);
 
 class TaskCalendar extends StatefulWidget {
   const TaskCalendar({Key? key}) : super(key: key);
