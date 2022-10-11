@@ -24,11 +24,7 @@ Future<void> createJsons() async {
   await saveOtherToHs();
 }
 
-final List<TodoList> todoLists = <TodoList>[];
-final List<TodoPool> todoPools = <TodoPool>[];
-final List<StructureToH> structureToHs = <StructureToH>[];
-final List<PeriodicToH> periodicToHs = <PeriodicToH>[];
-final List<ToH> templateToHs = <ToH>[];
+
 
 late final File taskListsFile;
 late final File taskPoolsFile;

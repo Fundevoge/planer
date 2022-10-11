@@ -2,19 +2,24 @@ import 'dart:collection';
 
 import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:planer/backend/helper.dart';
-import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/date.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:flutter/material.dart';
 
+final List<TodoList> todoLists = <TodoList>[];
+final List<TodoPool> todoPools = <TodoPool>[];
+final List<StructureToH> structureToHs = <StructureToH>[];
+final List<PeriodicToH> periodicToHs = <PeriodicToH>[];
+final List<ToH> templateToHs = <ToH>[];
+
 final Map<String, Color> listColors = {};
 void initListColors() {
-  for(TodoList todoList in todoLists){
+  for (TodoList todoList in todoLists) {
     listColors[todoList.listName] = todoList.listColor;
   }
 }
 
-class TodoList{
+class TodoList {
   final Key uid;
   final LinkedHashMap<Date, List<ToH>> tohs;
   Color listColor;
@@ -26,8 +31,7 @@ class TodoList{
 
   Map<String, dynamic> toJson() {
     final Map<String, List<Map<String, dynamic>>> jsonToHs = {
-      for (Date date in tohs.keys) date.toString() :
-          [for(ToH toh in tohs[date]!) toh.toJson()]
+      for (Date date in tohs.keys) date.toString(): [for (ToH toh in tohs[date]!) toh.toJson()]
     };
     return {
       "uid": uid.toString(),
@@ -42,16 +46,14 @@ class TodoList{
       : uid = Key(json['uid']),
         listName = json["listName"],
         listColor = Color(json["listColor"]),
-        listIcon =  Icon(deserializeIcon(json["listIcon"])),
-        tohs = LinkedHashMap.from(
-            {for (String date in json["tohs"].keys)
-              Date.fromString(date) :
-                [for(Map<String, dynamic> jsonToH in json["tohs"][date]) ToH.fromJson(jsonToH)]
+        listIcon = Icon(deserializeIcon(json["listIcon"])),
+        tohs = LinkedHashMap.from({
+          for (String date in json["tohs"].keys)
+            Date.fromString(date): [for (Map<String, dynamic> jsonToH in json["tohs"][date]) ToH.fromJson(jsonToH)]
         });
-
 }
 
-class TodoPool{
+class TodoPool {
   final Key uid;
   final List<ToH> tohs;
   Color poolColor;
@@ -76,6 +78,6 @@ class TodoPool{
       : uid = Key(json['uid']),
         poolName = json["poolName"],
         poolColor = Color(json["poolColor"]),
-        poolIcon =  Icon(deserializeIcon(json["poolIcon"])),
-        tohs = [for(Map<String, dynamic> serializedToH in json["tohs"]) ToH.fromJson(serializedToH)];
+        poolIcon = Icon(deserializeIcon(json["poolIcon"])),
+        tohs = [for (Map<String, dynamic> serializedToH in json["tohs"]) ToH.fromJson(serializedToH)];
 }
