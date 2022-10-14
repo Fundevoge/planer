@@ -72,41 +72,64 @@ class _TaskCalendarState extends State<TaskCalendar> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.fromLTRB(12.0, 8.0, 4.0, 8.0),
           child: Row(
             children: [
-              const SizedBox(width: 16.0),
-              SizedBox(
-                width: 200.0,
-                child: TextButton(
-                  child: Text(
-                    DateFormat.yMMMM('de_DE').format(_focusedMonth),
-                    style: const TextStyle(fontSize: 24.0, color: Color(0xFF333355)),
-                  ),
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Jahr ändern'),
-                      content: SizedBox(
-                        width: 300,
-                        height: 400,
-                        child: YearPicker(
-                          firstDate: DateTime(myPreferences.getInt("firstOpenedYear")! - 20),
-                          lastDate: DateTime.now().add(const Duration(days: 36500)),
-                          selectedDate: _focusedMonth,
-                          onChanged: (date) {
-                            setState(() {
-                              _focusedMonth = DateTime(date.year, _focusedMonth.month);
-                            });
-                            Navigator.pop(context);
-                          },
-                        ),
+              TextButton(
+                child: Text(
+                  DateFormat.yMMMM('de_DE').format(_focusedMonth),
+                  style: const TextStyle(fontSize: 24.0, color: Color(0xFF333355)),
+                  textAlign: TextAlign.start,
+                ),
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Jahr ändern'),
+                    content: SizedBox(
+                      width: 300,
+                      height: 400,
+                      child: YearPicker(
+                        firstDate: DateTime(myPreferences.getInt("firstOpenedYear")! - 20),
+                        lastDate: DateTime.now().add(const Duration(days: 36500)),
+                        selectedDate: _focusedMonth,
+                        onChanged: (date) {
+                          setState(() {
+                            _focusedMonth = DateTime(date.year, _focusedMonth.month);
+                          });
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
                   ),
                 ),
               ),
               const Spacer(),
+              PopupMenuButton(
+                offset: const Offset(100, 100),
+                elevation: 5.0,
+                child: Row(children: const <Widget>[Text("Listen"), Icon(Icons.arrow_drop_down_sharp)],),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: StatefulBuilder(
+                      builder: (_context, _setState){
+                        return ListView.builder(
+                          itemCount: todoLists.length,
+                          prototypeItem: ListTile(
+                            title: Text(todoLists.first.listName),
+                            trailing: Checkbox(value: null, onChanged: (bool? value) {  },),),
+                          itemBuilder: (__context, index) {
+                            return ListTile(
+                              title: Text(todoLists[index].listName),
+                              trailing: Checkbox(value: null, onChanged: (bool? value) {_setState((){ });}),
+                            );
+                          },
+                        );
+    }
+
+                    ),
+                  ),
+                ],
+              ),
               IconButton(
                   icon: const Icon(Icons.chevron_left),
                   onPressed: () {
