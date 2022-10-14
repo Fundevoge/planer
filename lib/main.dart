@@ -7,30 +7,36 @@ import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/pages/main_page.dart';
+import 'package:provider/provider.dart';
 import 'backend/preference_manager.dart';
+import 'backend/state_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
   initializeDateFormatting('de_DE').then((_) => runApp(
-      MaterialApp(
-            title: "Planer",
-            initialRoute: "/",
-            routes: <String, WidgetBuilder>{
-              "/": (_) => const MainPage(),
-            },
-            debugShowCheckedModeBanner: false,
-          ))
+      ChangeNotifierProvider(
+        create: (context) => Rebuilder(),
+        child: MaterialApp(
+          title: "Planer",
+          initialRoute: "/",
+          routes: <String, WidgetBuilder>{
+            "/": (_) => const MainPage(),
+          },
+          debugShowCheckedModeBanner: false,
+        )),
+      ),
   );
 }
 
 Future<void> init() async {
   await initPreferences();
+  initPreState();
   bool doOneTimeSetup = await jsonStorageSetup();
-  if(doOneTimeSetup){
+  if(doOneTimeSetup) {
     await initialOneTimeSetup();
   }
-  initState();
+  initPostState();
 }
 
 Future<bool> jsonStorageSetup() async {
@@ -69,8 +75,11 @@ Future<void> initialOneTimeSetup() async {
   myPreferences.setInt('firstOpenedYear', DateTime.now().year);
 }
 
-initState() {
+void initPreState() {
   initTaskColors();
-  initListColors();
   initIcon();
+}
+
+void initPostState(){
+  initListColors();
 }
