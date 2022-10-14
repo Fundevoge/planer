@@ -1,66 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/date.dart';
+import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
 
-class TodoListWidget extends StatefulWidget {
-  const TodoListWidget({Key? key, required this.todoList}) : super(key: key);
+class ListPoolView extends StatefulWidget {
   final TodoList todoList;
+  const ListPoolView({Key? key, required this.todoList, }) : super(key: key);
+
   @override
-  State<TodoListWidget> createState() => _TodoListWidgetState();
+  State<ListPoolView> createState() => _ListPoolViewState();
 }
 
-class _TodoListWidgetState extends State<TodoListWidget> {
-    Date displayedListDate = Date.now();
+final TextEditingController _nameController = TextEditingController();
+final TextEditingController _noteController = TextEditingController();
+// Top flex to bottom flex
+double? topHeight = myPreferences.getDouble("MainViewTopHeight");
+double? bottomHeight = myPreferences.getDouble("MainViewBottomHeight");
+int _currentTodoPoolIndex = myPreferences.getInt("currentTodoPoolIndex") ?? 0;
+Date displayedListDate = Date.now();
 
+class _ListPoolViewState extends State<ListPoolView> {
   @override
-  Widget build(BuildContext context) {
-    return ReorderableListView(
-      onReorder: (int oldIndex, int newIndex) {},
-      children: widget.todoList.tohs[displayedListDate]!
-          .map((e) => TileToH(
-              key: e.uid,
-              toh: e,
-              moveToDone: (_) => {},
-              enterSelectionMode: () => {},
-              showConstraints: (_) => {},
-              startTimer: (_) => {},
-              onTapCallback: (_) => {}))
-          .toList(),
-    );
+  void initState() {
+    super.initState();
   }
-}
 
-class TodoPoolWidget extends StatefulWidget {
-  const TodoPoolWidget({Key? key}) : super(key: key);
-
-  @override
-  State<TodoPoolWidget> createState() => _TodoPoolWidgetState();
-}
-
-class _TodoPoolWidgetState extends State<TodoPoolWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return ReorderableListView(
-      onReorder: (int oldIndex, int newIndex) {},
-      children: const [],
-    );
+  bool showTaskEditDialog(BuildContext context, ToH toH) {
+    bool _hasChanged = false;
+    showDialog(
+        context: context,
+        builder: (_context) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 400,
+              child: Column(
+                children: <Widget>[
+                  TextField(
+                    controller: _nameController,
+                    onChanged: (val){
+                      toH.name = val;
+                      _hasChanged = true;
+                    },
+                  ),
+                  TextField(
+                    controller: _noteController,
+                    decoration: const InputDecoration(hintText: 'Notizen'),
+                    onChanged: (val){
+                      toH.notes = val;
+                      _hasChanged = true;
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).then((value) => {});
+    return _hasChanged;
   }
-}
-
-class ListAndPool extends StatefulWidget {
-  final TodoList todoList;
-  const ListAndPool({Key? key, required this.todoList, }) : super(key: key);
-
-  @override
-  State<ListAndPool> createState() => _ListAndPoolState();
-}
-
-class _ListAndPoolState extends State<ListAndPool> {
-  // Top flex to bottom flex
-  double? topHeight = myPreferences.getDouble("MainViewTopHeight");
-  double? bottomHeight = myPreferences.getDouble("MainViewBottomHeight");
 
   _handleUpdate(DragUpdateDetails details) {
     double deltaY = details.delta.dy;
@@ -89,7 +87,19 @@ class _ListAndPoolState extends State<ListAndPool> {
         children: [
           SizedBox(
             height: topHeight!,
-            child: TodoListWidget(todoList: widget.todoList),
+            child: ReorderableListView(
+              onReorder: (int oldIndex, int newIndex) {},
+              children: widget.todoList.tohs[displayedListDate]!
+                  .map((e) => TileToH(
+                  key: e.uid,
+                  toh: e,
+                  moveToDone: (_) => {},
+                  enterSelectionMode: () => {},
+                  showConstraints: (_) => {},
+                  startTimer: (_) => {},
+                  onTapCallback: (_) => {}))
+                  .toList(),
+            ),
           ),
           GestureDetector(
             onPanUpdate: _handleUpdate,
@@ -110,7 +120,19 @@ class _ListAndPoolState extends State<ListAndPool> {
           ),
           SizedBox(
             height: bottomHeight!,
-            child: TodoPoolWidget(),
+            child: ReorderableListView(
+              onReorder: (int oldIndex, int newIndex) {},
+              children: todoPools[_currentTodoPoolIndex].tohs
+                  .map((e) => TileToH(
+                  key: e.uid,
+                  toh: e,
+                  moveToDone: (_) => {},
+                  enterSelectionMode: () => {},
+                  showConstraints: (_) => {},
+                  startTimer: (_) => {},
+                  onTapCallback: (_) => {}))
+                  .toList(),
+            ),
           ),
         ],
       ); // create function here to adapt to the parent widget's constraints

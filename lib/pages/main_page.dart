@@ -30,7 +30,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     views = <Widget>[const TaskCalendar()] +
-        todoLists.map((e) => ListAndPool(todoList: e,)).toList();
+        todoLists.map((e) => ListPoolView(todoList: e,)).toList();
     super.initState();
   }
 
