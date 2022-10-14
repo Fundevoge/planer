@@ -3,6 +3,9 @@ import 'package:planer/backend/helper.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:flutter/material.dart';
 
+const TextStyle lineThroughStyle = TextStyle(color: Colors.grey, decoration: TextDecoration.lineThrough,);
+
+
 class TileToH extends StatefulWidget {
   final ToH toh;
   final void Function(int) moveToDone;
@@ -75,7 +78,7 @@ class _TileToHState extends State<TileToH> {
               ),
               Text(
                 widget.toh.name,
-                style: taskTextStyle.copyWith(color: _textColor),
+                style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
               ),
               Expanded(child: Container()),
               Row(

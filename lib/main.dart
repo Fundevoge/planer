@@ -10,6 +10,7 @@ import 'package:planer/pages/main_page.dart';
 import 'package:provider/provider.dart';
 import 'backend/preference_manager.dart';
 import 'backend/state_manager.dart';
+import 'page_elements/todolistview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,6 +79,7 @@ Future<void> initialOneTimeSetup() async {
 void initPreState() {
   initTaskColors();
   initIcon();
+  initListPool();
 }
 
 void initPostState(){
