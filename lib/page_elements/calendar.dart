@@ -77,10 +77,12 @@ class _TaskCalendarState extends State<TaskCalendar> {
       List<ToH> dayToHs = _getToHsForDay(_selectedDay);
       return Column(
         children: [
+          // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(12.0, 8.0, 4.0, 8.0),
             child: Row(
               children: [
+                // Current Month/Year + Change Year
                 TextButton(
                   child: Text(
                     DateFormat.yMMMM('de_DE').format(_focusedMonth),
@@ -110,6 +112,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
                   ),
                 ),
                 const Spacer(),
+                // Popup to select shown lists
                 PopupMenuButton(
                   offset: const Offset(100, 15),
                   elevation: 5.0,
@@ -117,25 +120,30 @@ class _TaskCalendarState extends State<TaskCalendar> {
                   child: Row(
                     children: const <Widget>[Text("Listen"), Icon(Icons.arrow_drop_down_sharp)],
                   ),
-                  itemBuilder: (context) => [
-                    for (int index = 0; index < todoLists.length; index++)
+                  itemBuilder: (_context) => [
+                    for (TodoList todoList in todoLists)
                       PopupMenuItem(
-                        child: StatefulBuilder(builder: (_context, _setState) {
+                        child: StatefulBuilder(builder: (__context, _setState) {
                           return ListTile(
-                            title: Text(todoLists[index].listName),
-                            trailing: Checkbox(
-                                value: todoLists[index].showInCalendar,
-                                onChanged: (bool? value) {
-                                  _setState(() {
-                                    todoLists[index].showInCalendar = value!;
-                                    rebuilder.rebuild();
-                                  });
-                                }),
+                            title: Text(todoList.listName),
+                            trailing: Theme(
+                              data: Theme.of(__context).copyWith(unselectedWidgetColor: todoList.listColor),
+                              child: Checkbox(
+                                activeColor: todoList.listColor,
+                                  value: todoList.showInCalendar,
+                                  onChanged: (bool? value) {
+                                    _setState(() {
+                                      todoList.showInCalendar = value!;
+                                      rebuilder.rebuild();
+                                    });
+                                  }),
+                            ),
                           );
                         }),
                       ),
                   ],
                 ),
+                // Previous Month
                 IconButton(
                     icon: const Icon(Icons.chevron_left),
                     onPressed: () {
@@ -149,6 +157,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
                             : DateTime(_focusedMonth.year, _focusedMonth.month - 1);
                       });
                     }),
+                // Next Month
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
                   onPressed: () {
@@ -166,6 +175,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
               ],
             ),
           ),
+          // Calendar
           TableCalendar<ToH>(
             firstDay: kFirstDay,
             lastDay: kLastDay,
@@ -196,6 +206,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
             },
           ),
           const SizedBox(height: 8.0),
+          // Shown Tasks
           Expanded(
             child: ListView.builder(
               itemCount: dayToHs.length,
