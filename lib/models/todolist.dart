@@ -42,7 +42,7 @@ class TodoList {
       "listName": listName,
       "listIcon": serializeIcon(listIcon.icon!),
       "showInCalendar": showInCalendar,
-      "displayedDate": displayedDate,
+      "displayedDate": displayedDate.toString(),
     };
   }
 
@@ -52,7 +52,7 @@ class TodoList {
         listColor = Color(json["listColor"]),
         listIcon = Icon(deserializeIcon(json["listIcon"])),
         showInCalendar = json["showInCalendar"],
-        displayedDate = json["displayedDate"],
+        displayedDate = Date.fromString(json["displayedDate"]),
         tohs = LinkedHashMap.from({
           for (String date in json["tohs"].keys)
             Date.fromString(date): [for (Map<String, dynamic> jsonToH in json["tohs"][date]) ToH.fromJson(jsonToH)]
