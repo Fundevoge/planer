@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:planer/backend/preference_manager.dart';
-import 'package:planer/models/date.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
@@ -23,7 +22,6 @@ final TextEditingController _noteController = TextEditingController();
 late double? topHeight;
 late double? bottomHeight;
 late int _currentTodoPoolIndex;
-Date displayedListDate = Date.now();
 late bool showCheckedTodo;
 late bool showCheckedPool;
 
@@ -37,6 +35,8 @@ void initListPool() {
 }
 
 class _ListPoolViewState extends State<ListPoolView> {
+  final GlobalKey _sliderKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -109,7 +109,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                   shrinkWrap: true,
                   physics: const ClampingScrollPhysics(),
                   onReorder: (int oldIndex, int newIndex) {},
-                  children: widget.todoList.tohs[displayedListDate]!
+                  children: widget.todoList.tohs[widget.todoList.displayedDate]!
                       .where((element) => !element.isDone)
                       .map((e) => TileToH(
                           key: e.uid,
@@ -144,7 +144,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                   ListView(
                       shrinkWrap: true,
                       physics: const ClampingScrollPhysics(),
-                      children: widget.todoList.tohs[displayedListDate]!
+                      children: widget.todoList.tohs[widget.todoList.displayedDate]!
                           .where((element) => element.isDone)
                           .map((e) => TileToH(
                               key: e.uid,

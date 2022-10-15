@@ -26,9 +26,10 @@ class TodoList {
   Icon listIcon;
   String listName;
   bool showInCalendar;
+  Date displayedDate;
 
   TodoList({required this.tohs, required this.listColor, required this.listIcon, required this.listName, this.showInCalendar = true})
-      : uid = generateUid();
+      : uid = generateUid(), displayedDate = Date.now();
 
   Map<String, dynamic> toJson() {
     final Map<String, List<Map<String, dynamic>>> jsonToHs = {
@@ -40,7 +41,8 @@ class TodoList {
       "listColor": listColor.value,
       "listName": listName,
       "listIcon": serializeIcon(listIcon.icon!),
-      "showInCalendar": showInCalendar
+      "showInCalendar": showInCalendar,
+      "displayedDate": displayedDate,
     };
   }
 
@@ -50,6 +52,7 @@ class TodoList {
         listColor = Color(json["listColor"]),
         listIcon = Icon(deserializeIcon(json["listIcon"])),
         showInCalendar = json["showInCalendar"],
+        displayedDate = json["displayedDate"],
         tohs = LinkedHashMap.from({
           for (String date in json["tohs"].keys)
             Date.fromString(date): [for (Map<String, dynamic> jsonToH in json["tohs"][date]) ToH.fromJson(jsonToH)]
