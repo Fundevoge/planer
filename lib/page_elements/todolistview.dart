@@ -131,7 +131,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                 color: const Color(0xFFFFFFFF),
                 height: topHeight!,
                 child: ListView(
-                    // itemExtent: 100,
+                    itemExtent: 62,
                     controller: _todoListScrollController,
                     children: <Widget>[] +
                         widget.todoList.tohs[widget.todoList.displayedDate]!
@@ -205,7 +205,6 @@ class _ListPoolViewState extends State<ListPoolView> {
                 color: const Color(0xFFFFFFFF),
                 height: bottomHeight!,
                 child: ListView(
-
                   itemExtent: 62,
                   controller: _poolScrollController,
                   children: <Widget>[] +

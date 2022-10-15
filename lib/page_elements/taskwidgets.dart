@@ -50,90 +50,92 @@ class _TileToHState extends State<TileToH> {
                 width: harmonicSize(widget.toh.recursionDepth),
               ),
             Expanded(
-              child: ListTile(
-                tileColor: _tileColor,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: _boundaryColor,
-                    width: 3,
+              child: Material(
+                child: ListTile(
+                  tileColor: _tileColor,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: _boundaryColor,
+                      width: 3,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
                   ),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                onTap: () => widget.onTapCallback(widget.toh),
-                onLongPress: () {
-                  setState(() {
-                    widget.toh.isSelected = true;
-                  });
-                  widget.enterSelectionMode();
-                },
-                title: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    ReorderableDragStartListener(
-                      index: widget.toh.index,
-                      child: widget.toh.deadlineOverdue()
-                          ? Stack(
-                              alignment: Alignment.center,
-                              children: const [
-                                Icon(
-                                  Icons.circle,
-                                  color: Color(0xFF555555),
-                                  size: 29,
-                                ),
-                                Icon(
-                                  Icons.warning_amber_rounded,
-                                  color: Colors.amber,
-                                  size: 24,
-                                ),
-                              ],
-                            )
-                          : Stack(
-                              alignment: Alignment.center,
-                              children: const [
-                                Icon(
-                                  Icons.circle,
-                                  color: Color(0xFF555555),
-                                  size: 29,
-                                ),
-                                Icon(
-                                  Icons.schedule,
-                                  color: Colors.lightGreen,
-                                  size: 24,
-                                )
-                              ],
+                  onTap: () => widget.onTapCallback(widget.toh),
+                  onLongPress: () {
+                    setState(() {
+                      widget.toh.isSelected = true;
+                    });
+                    widget.enterSelectionMode();
+                  },
+                  title: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      ReorderableDragStartListener(
+                        index: widget.toh.index,
+                        child: widget.toh.deadlineOverdue()
+                            ? Stack(
+                                alignment: Alignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.circle,
+                                    color: Color(0xFF555555),
+                                    size: 29,
+                                  ),
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.amber,
+                                    size: 24,
+                                  ),
+                                ],
+                              )
+                            : Stack(
+                                alignment: Alignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.circle,
+                                    color: Color(0xFF555555),
+                                    size: 29,
+                                  ),
+                                  Icon(
+                                    Icons.schedule,
+                                    color: Colors.lightGreen,
+                                    size: 24,
+                                  )
+                                ],
+                              ),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        widget.toh.name.replaceAll('"', ""),
+                        style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          if (widget.toh.timeLimit != null)
+                            IconButton(
+                                onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                          if (hasConstraints)
+                            IconButton(
+                              icon: const Icon(CupertinoIcons.exclamationmark),
+                              onPressed: () => widget.showConstraints(widget.toh.constraints),
                             ),
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    Text(
-                      widget.toh.name.replaceAll('"', ""),
-                      style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        if (widget.toh.timeLimit != null)
-                          IconButton(
-                              onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
-                        if (hasConstraints)
-                          IconButton(
-                            icon: const Icon(CupertinoIcons.exclamationmark),
-                            onPressed: () => widget.showConstraints(widget.toh.constraints),
-                          ),
-                        ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-                        Checkbox(
-                            value: widget.toh.isDone,
-                            onChanged: (val) {
-                              setState(() {
-                                widget.toh.isDone = val!;
-                              });
-                              widget.moveToDone(widget.toh.index);
-                            }),
-                      ],
-                      mainAxisSize: MainAxisSize.min,
-                    ),
-                  ],
+                          ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                          Checkbox(
+                              value: widget.toh.isDone,
+                              onChanged: (val) {
+                                setState(() {
+                                  widget.toh.isDone = val!;
+                                });
+                                widget.moveToDone(widget.toh.index);
+                              }),
+                        ],
+                        mainAxisSize: MainAxisSize.min,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
