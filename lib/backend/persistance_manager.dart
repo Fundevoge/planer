@@ -34,7 +34,7 @@ late final File templateToHFile;
 
 void initTodoListsDebug() {
   todoLists.firstWhere((e) => e.listName == "Meine Liste").tohs.addAll({
-    Date.now(): [ToH.debugFactory(0), ] // ToH.debugFactory(1)]
+    Date.now(): [ToH.debugFactory(0), ToH.debugFactory(1), ToH.debugFactory(2), ToH.debugFactory(3)] // ToH.debugFactory(1)]
   });
 }
 

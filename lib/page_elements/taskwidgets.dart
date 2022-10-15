@@ -3,8 +3,10 @@ import 'package:planer/backend/helper.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:flutter/material.dart';
 
-const TextStyle lineThroughStyle = TextStyle(color: Colors.grey, decoration: TextDecoration.lineThrough,);
-
+const TextStyle lineThroughStyle = TextStyle(
+  color: Colors.grey,
+  decoration: TextDecoration.lineThrough,
+);
 
 class TileToH extends StatefulWidget {
   final ToH toh;
@@ -16,12 +18,12 @@ class TileToH extends StatefulWidget {
 
   const TileToH(
       {Key? key,
-        required this.toh,
-        required this.moveToDone,
-        required this.enterSelectionMode,
-        required this.showConstraints,
-        required this.startTimer,
-        required this.onTapCallback})
+      required this.toh,
+      required this.moveToDone,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.startTimer,
+      required this.onTapCallback})
       : super(key: key);
 
   @override
@@ -43,72 +45,98 @@ class _TileToHState extends State<TileToH> {
       children: <Widget>[
         Row(
           children: [
-            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
-            ListTile(
-            tileColor: _tileColor,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: _boundaryColor,
-                width: 3,
+            if (widget.toh.recursionDepth > 0)
+              SizedBox(
+                width: harmonicSize(widget.toh.recursionDepth),
               ),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            onTap: () => widget.onTapCallback(widget.toh),
-            onLongPress: () {
-              setState(() {
-                widget.toh.isSelected = true;
-              });
-              widget.enterSelectionMode();
-            },
-            title: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ReorderableDragStartListener(
-                  index: widget.toh.index,
-                  child: widget.toh.deadlineOverdue()
-                      ? const Icon(
-                    Icons.warning_amber_rounded,
-                    color: Colors.amber,
-                  )
-                      : const Icon(
-                    Icons.schedule,
-                    color: Colors.lightGreen,
+            Expanded(
+              child: ListTile(
+                tileColor: _tileColor,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: _boundaryColor,
+                    width: 3,
                   ),
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                const SizedBox(
-                  width: 15,
-                ),
-                Text(
-                  widget.toh.name.replaceAll('"', ""),
-                  style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
-                ),
-                Expanded(child: Container()),
-                Row(
+                onTap: () => widget.onTapCallback(widget.toh),
+                onLongPress: () {
+                  setState(() {
+                    widget.toh.isSelected = true;
+                  });
+                  widget.enterSelectionMode();
+                },
+                title: Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    if (widget.toh.timeLimit != null)
-                      IconButton(
-                          onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
-                    if (hasConstraints)
-                      IconButton(
-                        icon: const Icon(CupertinoIcons.exclamationmark),
-                        onPressed: () => widget.showConstraints(widget.toh.constraints),
-                      ),
-                    ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-                    Checkbox(
-                        value: widget.toh.isDone,
-                        onChanged: (val) {
-                          setState(() {
-                            widget.toh.isDone = val!;
-                          });
-                          widget.moveToDone(widget.toh.index);
-                        }),
+                    ReorderableDragStartListener(
+                      index: widget.toh.index,
+                      child: widget.toh.deadlineOverdue()
+                          ? Stack(
+                              alignment: Alignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.circle,
+                                  color: Color(0xFF555555),
+                                  size: 29,
+                                ),
+                                Icon(
+                                  Icons.warning_amber_rounded,
+                                  color: Colors.amber,
+                                  size: 24,
+                                ),
+                              ],
+                            )
+                          : Stack(
+                              alignment: Alignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.circle,
+                                  color: Color(0xFF555555),
+                                  size: 29,
+                                ),
+                                Icon(
+                                  Icons.schedule,
+                                  color: Colors.lightGreen,
+                                  size: 24,
+                                )
+                              ],
+                            ),
+                    ),
+                    const SizedBox(
+                      width: 15,
+                    ),
+                    Text(
+                      widget.toh.name.replaceAll('"', ""),
+                      style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        if (widget.toh.timeLimit != null)
+                          IconButton(
+                              onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                        if (hasConstraints)
+                          IconButton(
+                            icon: const Icon(CupertinoIcons.exclamationmark),
+                            onPressed: () => widget.showConstraints(widget.toh.constraints),
+                          ),
+                        ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                        Checkbox(
+                            value: widget.toh.isDone,
+                            onChanged: (val) {
+                              setState(() {
+                                widget.toh.isDone = val!;
+                              });
+                              widget.moveToDone(widget.toh.index);
+                            }),
+                      ],
+                      mainAxisSize: MainAxisSize.min,
+                    ),
                   ],
-                  mainAxisSize: MainAxisSize.min,
                 ),
-              ],
+              ),
             ),
-          ),
           ],
         ),
         if (widget.toh.isHighlighted)
@@ -140,10 +168,10 @@ class EditModeTileToH extends StatefulWidget {
 
   const EditModeTileToH(
       {Key? key,
-        required this.toh,
-        required this.enterSelectionMode,
-        required this.showConstraints,
-        required this.onTapCallback})
+      required this.toh,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.onTapCallback})
       : super(key: key);
 
   @override
@@ -165,7 +193,10 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
       children: <Widget>[
         Row(
           children: [
-            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
+            if (widget.toh.recursionDepth > 0)
+              SizedBox(
+                width: harmonicSize(widget.toh.recursionDepth),
+              ),
             ListTile(
               tileColor: _tileColor,
               shape: RoundedRectangleBorder(
@@ -236,10 +267,10 @@ class ReadOnlyTileToH extends StatefulWidget {
   final void Function(ToH) onTapCallback;
   const ReadOnlyTileToH(
       {Key? key,
-        required this.toh,
-        required this.enterSelectionMode,
-        required this.showConstraints,
-        required this.onTapCallback})
+      required this.toh,
+      required this.enterSelectionMode,
+      required this.showConstraints,
+      required this.onTapCallback})
       : super(key: key);
 
   @override
@@ -266,7 +297,10 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
       children: <Widget>[
         Row(
           children: [
-            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
+            if (widget.toh.recursionDepth > 0)
+              SizedBox(
+                width: harmonicSize(widget.toh.recursionDepth),
+              ),
             ListTile(
               tileColor: _tileColor,
               shape: RoundedRectangleBorder(
@@ -291,13 +325,13 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
                     index: widget.toh.index,
                     child: widget.toh.deadlineOverdue()
                         ? const Icon(
-                      Icons.warning_amber_rounded,
-                      color: Color(0xFFB8A87A),
-                    )
+                            Icons.warning_amber_rounded,
+                            color: Color(0xFFB8A87A),
+                          )
                         : const Icon(
-                      Icons.schedule,
-                      color: Color(0xFF9BB87A),
-                    ),
+                            Icons.schedule,
+                            color: Color(0xFF9BB87A),
+                          ),
                   ),
                   const SizedBox(
                     width: 15,
@@ -309,8 +343,7 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
                   Expanded(child: Container()),
                   Row(
                     children: [
-                      if (widget.toh.timeLimit != null)
-                        const Icon(Icons.alarm),
+                      if (widget.toh.timeLimit != null) const Icon(Icons.alarm),
                       if (hasConstraints)
                         IconButton(
                           icon: const Icon(CupertinoIcons.exclamationmark),

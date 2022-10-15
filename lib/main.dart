@@ -35,7 +35,7 @@ Future<void> init() async {
   initPreState();
   bool doOneTimeSetup = await jsonStorageSetup();
   if(doOneTimeSetup) {
-    await initialOneTimeSetup();
+    initialOneTimeSetup();
   }
   initPostState();
 }
@@ -72,7 +72,7 @@ Future<bool> jsonStorageSetup() async {
   return !exists;
 }
 
-Future<void> initialOneTimeSetup() async {
+void initialOneTimeSetup() {
   myPreferences.setInt('firstOpenedYear', DateTime.now().year);
 }
 

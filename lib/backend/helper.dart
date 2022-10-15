@@ -30,3 +30,7 @@ const List<double> harmonicFirstTen = <double>[24, 16, 12, 9.6, 8, 48/7, 6, 16/3
 double harmonicSize(int depth){
   return harmonicFirstTen.take(depth).reduce((value, element) => value + element);
 }
+
+int randomColorCode(){
+  return  0xFF000000 + random.nextInt(0xFFFFFF+1);
+}

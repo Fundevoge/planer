@@ -107,12 +107,12 @@ class ToH {
 
   factory ToH.debugFactory(int index) {
     return ToH(
-      name: "Debug Task $index",
+      name: "New Debug Task $index",
       notes: "Debug Notes",
       listName: "Meine Liste",
       index: index,
       icon: const Icon(Icons.developer_mode),
-      taskColor: defaultTaskColor,
+      taskColor: Color(randomColorCode()),
     );
   }
 
