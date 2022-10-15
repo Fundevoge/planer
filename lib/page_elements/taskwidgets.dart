@@ -41,70 +41,75 @@ class _TileToHState extends State<TileToH> {
     return Stack(
       alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
-        ListTile(
-          tileColor: _tileColor,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: _boundaryColor,
-              width: 3,
+        Row(
+          children: [
+            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
+            ListTile(
+            tileColor: _tileColor,
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: _boundaryColor,
+                width: 3,
+              ),
+              borderRadius: BorderRadius.circular(5),
             ),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          onTap: () => widget.onTapCallback(widget.toh),
-          onLongPress: () {
-            setState(() {
-              widget.toh.isSelected = true;
-            });
-            widget.enterSelectionMode();
-          },
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ReorderableDragStartListener(
-                index: widget.toh.index,
-                child: widget.toh.deadlineOverdue()
-                    ? const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Colors.amber,
-                )
-                    : const Icon(
-                  Icons.schedule,
-                  color: Colors.lightGreen,
+            onTap: () => widget.onTapCallback(widget.toh),
+            onLongPress: () {
+              setState(() {
+                widget.toh.isSelected = true;
+              });
+              widget.enterSelectionMode();
+            },
+            title: Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ReorderableDragStartListener(
+                  index: widget.toh.index,
+                  child: widget.toh.deadlineOverdue()
+                      ? const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.amber,
+                  )
+                      : const Icon(
+                    Icons.schedule,
+                    color: Colors.lightGreen,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: 15,
-              ),
-              Text(
-                widget.toh.name.replaceAll('"', ""),
-                style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
-              ),
-              Expanded(child: Container()),
-              Row(
-                children: [
-                  if (widget.toh.timeLimit != null)
-                    IconButton(
-                        onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
-                  if (hasConstraints)
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.exclamationmark),
-                      onPressed: () => widget.showConstraints(widget.toh.constraints),
-                    ),
-                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-                  Checkbox(
-                      value: widget.toh.isDone,
-                      onChanged: (val) {
-                        setState(() {
-                          widget.toh.isDone = val!;
-                        });
-                        widget.moveToDone(widget.toh.index);
-                      }),
-                ],
-                mainAxisSize: MainAxisSize.min,
-              ),
-            ],
+                const SizedBox(
+                  width: 15,
+                ),
+                Text(
+                  widget.toh.name.replaceAll('"', ""),
+                  style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
+                ),
+                Expanded(child: Container()),
+                Row(
+                  children: [
+                    if (widget.toh.timeLimit != null)
+                      IconButton(
+                          onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                    if (hasConstraints)
+                      IconButton(
+                        icon: const Icon(CupertinoIcons.exclamationmark),
+                        onPressed: () => widget.showConstraints(widget.toh.constraints),
+                      ),
+                    ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                    Checkbox(
+                        value: widget.toh.isDone,
+                        onChanged: (val) {
+                          setState(() {
+                            widget.toh.isDone = val!;
+                          });
+                          widget.moveToDone(widget.toh.index);
+                        }),
+                  ],
+                  mainAxisSize: MainAxisSize.min,
+                ),
+              ],
+            ),
           ),
+          ],
         ),
         if (widget.toh.isHighlighted)
           Stack(
@@ -158,45 +163,50 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
     return Stack(
       alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
-        ListTile(
-          tileColor: _tileColor,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: _boundaryColor,
-              width: 3,
-            ),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          onTap: () => widget.onTapCallback(widget.toh),
-          onLongPress: () {
-            setState(() {
-              widget.toh.isSelected = true;
-            });
-            widget.enterSelectionMode();
-          },
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                widget.toh.name.replaceAll('"', ""),
-                style: taskTextStyle.copyWith(color: _textColor),
+        Row(
+          children: [
+            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
+            ListTile(
+              tileColor: _tileColor,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: _boundaryColor,
+                  width: 3,
+                ),
+                borderRadius: BorderRadius.circular(5),
               ),
-              Expanded(child: Container()),
-              Row(
+              onTap: () => widget.onTapCallback(widget.toh),
+              onLongPress: () {
+                setState(() {
+                  widget.toh.isSelected = true;
+                });
+                widget.enterSelectionMode();
+              },
+              title: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (widget.toh.timeLimit != null) const Icon(Icons.alarm),
-                  if (hasConstraints)
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.exclamationmark),
-                      onPressed: () => widget.showConstraints(widget.toh.constraints),
-                    ),
-                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                  Text(
+                    widget.toh.name.replaceAll('"', ""),
+                    style: taskTextStyle.copyWith(color: _textColor),
+                  ),
+                  Expanded(child: Container()),
+                  Row(
+                    children: [
+                      if (widget.toh.timeLimit != null) const Icon(Icons.alarm),
+                      if (hasConstraints)
+                        IconButton(
+                          icon: const Icon(CupertinoIcons.exclamationmark),
+                          onPressed: () => widget.showConstraints(widget.toh.constraints),
+                        ),
+                      ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                    ],
+                    mainAxisSize: MainAxisSize.min,
+                  ),
                 ],
-                mainAxisSize: MainAxisSize.min,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         if (widget.toh.isHighlighted)
           Stack(
@@ -254,66 +264,71 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
     return Stack(
       alignment: AlignmentDirectional.topEnd,
       children: <Widget>[
-        ListTile(
-          tileColor: _tileColor,
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: _boundaryColor,
-              width: 3,
-            ),
-            borderRadius: BorderRadius.circular(5),
-          ),
-          onTap: () => widget.onTapCallback(widget.toh),
-          onLongPress: () {
-            setState(() {
-              widget.toh.isSelected = true;
-            });
-            widget.enterSelectionMode();
-          },
-          title: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ReorderableDragStartListener(
-                index: widget.toh.index,
-                child: widget.toh.deadlineOverdue()
-                    ? const Icon(
-                  Icons.warning_amber_rounded,
-                  color: Color(0xFFB8A87A),
-                )
-                    : const Icon(
-                  Icons.schedule,
-                  color: Color(0xFF9BB87A),
+        Row(
+          children: [
+            if (widget.toh.recursionDepth > 0) SizedBox(width: harmonicSize(widget.toh.recursionDepth),),
+            ListTile(
+              tileColor: _tileColor,
+              shape: RoundedRectangleBorder(
+                side: BorderSide(
+                  color: _boundaryColor,
+                  width: 3,
                 ),
+                borderRadius: BorderRadius.circular(5),
               ),
-              const SizedBox(
-                width: 15,
-              ),
-              Text(
-                widget.toh.name.replaceAll('"', ""),
-                style: taskTextStyle.copyWith(color: _textColor),
-              ),
-              Expanded(child: Container()),
-              Row(
+              onTap: () => widget.onTapCallback(widget.toh),
+              onLongPress: () {
+                setState(() {
+                  widget.toh.isSelected = true;
+                });
+                widget.enterSelectionMode();
+              },
+              title: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (widget.toh.timeLimit != null)
-                    const Icon(Icons.alarm),
-                  if (hasConstraints)
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.exclamationmark),
-                      onPressed: () => widget.showConstraints(widget.toh.constraints),
+                  ReorderableDragStartListener(
+                    index: widget.toh.index,
+                    child: widget.toh.deadlineOverdue()
+                        ? const Icon(
+                      Icons.warning_amber_rounded,
+                      color: Color(0xFFB8A87A),
+                    )
+                        : const Icon(
+                      Icons.schedule,
+                      color: Color(0xFF9BB87A),
                     ),
-                  ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
-                  Checkbox(
-                    checkColor: const Color(0xFFD6D6FF),
-                    value: widget.toh.isDone,
-                    onChanged: null,
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  Text(
+                    widget.toh.name.replaceAll('"', ""),
+                    style: taskTextStyle.copyWith(color: _textColor),
+                  ),
+                  Expanded(child: Container()),
+                  Row(
+                    children: [
+                      if (widget.toh.timeLimit != null)
+                        const Icon(Icons.alarm),
+                      if (hasConstraints)
+                        IconButton(
+                          icon: const Icon(CupertinoIcons.exclamationmark),
+                          onPressed: () => widget.showConstraints(widget.toh.constraints),
+                        ),
+                      ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                      Checkbox(
+                        checkColor: const Color(0xFFD6D6FF),
+                        value: widget.toh.isDone,
+                        onChanged: null,
+                      ),
+                    ],
+                    mainAxisSize: MainAxisSize.min,
                   ),
                 ],
-                mainAxisSize: MainAxisSize.min,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         if (widget.toh.isHighlighted)
           Stack(

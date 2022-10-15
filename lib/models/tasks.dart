@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:planer/backend/preference_manager.dart';
@@ -85,6 +84,7 @@ class ToH {
   DateTime? deadline;
   bool isRepeating;
   List<TDConstraint>? constraints;
+  int recursionDepth;
 
   ToH(
       {required this.name,
@@ -101,7 +101,8 @@ class ToH {
       this.isSelected = false,
       this.deadline,
       this.isRepeating = false,
-      this.constraints})
+      this.constraints,
+      this.recursionDepth = 0})
       : uid = generateUid();
 
   factory ToH.debugFactory(int index) {
@@ -153,7 +154,8 @@ class ToH {
       "isSelected": isSelected,
       "deadline": deadline?.toIso8601String(),
       "isRepeating": isRepeating,
-      "constraints": jsonConstraints
+      "constraints": jsonConstraints,
+      "recursionDepth": recursionDepth
     };
   }
 
@@ -174,6 +176,7 @@ class ToH {
         isHighlighted = json["isHighlighted"],
         isSelected = json["isSelected"],
         deadline = json["deadline"] != null ? DateTime.parse(json["deadline"]) : null,
+        recursionDepth = json["recursionDepth"],
         isRepeating = json["isRepeating"],
         constraints = json["constraints"] != null
             ? [for (Map<String, dynamic> jsonConstraint in json["constraint"]) TDConstraint.fromJson(jsonConstraint)]
