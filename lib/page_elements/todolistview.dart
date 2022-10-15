@@ -3,6 +3,7 @@ import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
+import 'dart:math';
 
 class ListPoolView extends StatefulWidget {
   final TodoList todoList;
@@ -18,7 +19,6 @@ class ListPoolView extends StatefulWidget {
 
 final TextEditingController _nameController = TextEditingController();
 final TextEditingController _noteController = TextEditingController();
-// Top flex to bottom flex
 late double? topHeight;
 late double? bottomHeight;
 late double? insertArrowHeight;
@@ -26,6 +26,11 @@ late int _currentTodoPoolIndex;
 late bool showCheckedTodo;
 late bool showCheckedPool;
 late Color insertArrowColor;
+
+enum InsertionPosition{
+  list,
+  pool
+}
 
 void initListPool() {
   topHeight = myPreferences.getDouble("MainViewTopHeight");
@@ -41,6 +46,9 @@ void initListPool() {
 }
 
 const double insertArrowSize = 48;
+const double insertArrowOffset = insertArrowSize / 2;
+const double gestureDetectorHeight = 24;
+const double tileExtent = 62;
 
 class _ListPoolViewState extends State<ListPoolView> {
   late double maxHeight;
@@ -80,6 +88,22 @@ class _ListPoolViewState extends State<ListPoolView> {
     return _hasChanged;
   }
 
+  InsertionPosition getInsertionList(){
+    return insertArrowHeight! + insertArrowOffset > topHeight! ? InsertionPosition.pool : InsertionPosition.list;
+  }
+
+  int getInsertionIndex(InsertionPosition insertionPosition){
+    if(insertionPosition == InsertionPosition.list){
+      double actualPosition = insertArrowHeight! + insertArrowOffset + _todoListScrollController.offset;
+      return min(max(actualPosition / tileExtent, 0).round(), widget.todoList.tohs.length);
+    }
+    if(insertionPosition == InsertionPosition.pool){
+      double actualPosition = insertArrowHeight! + insertArrowOffset - (topHeight! + gestureDetectorHeight) + _poolScrollController.offset;
+      return min(max(actualPosition / tileExtent, 0).round(), todoPools[_currentTodoPoolIndex].tohs.length);
+    }
+    return 0;
+  }
+
   void _handlePanUpdate(DragUpdateDetails details) {
     double deltaY = details.delta.dy;
     if (topHeight! + deltaY < 0) {
@@ -91,6 +115,7 @@ class _ListPoolViewState extends State<ListPoolView> {
       topHeight = topHeight! + deltaY;
       bottomHeight = bottomHeight! - deltaY;
     });
+    _handleArrowPanUpdate(details);
   }
 
   void _handlePanEnd(DragEndDetails details) {
@@ -119,8 +144,8 @@ class _ListPoolViewState extends State<ListPoolView> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_context, constraints) {
       maxHeight = constraints.maxHeight;
-      topHeight ??= (maxHeight - 24) / 2;
-      bottomHeight ??= (maxHeight - 24) / 2;
+      topHeight ??= (maxHeight - gestureDetectorHeight) / 2;
+      bottomHeight ??= (maxHeight - gestureDetectorHeight) / 2;
       insertArrowHeight ??= 0;
       return Stack(
         children: [
@@ -131,7 +156,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                 color: const Color(0xFFFFFFFF),
                 height: topHeight!,
                 child: ListView(
-                    itemExtent: 62,
+                    itemExtent: tileExtent,
                     controller: _todoListScrollController,
                     children: <Widget>[] +
                         widget.todoList.tohs[widget.todoList.displayedDate]!
@@ -192,7 +217,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                     ),
                     color: const Color(0xFFBABABA),
                   ),
-                  height: 24,
+                  height: gestureDetectorHeight,
                   child: const InkWell(
                     child: Center(
                       child: Icon(Icons.menu),
@@ -205,7 +230,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                 color: const Color(0xFFFFFFFF),
                 height: bottomHeight!,
                 child: ListView(
-                  itemExtent: 62,
+                  itemExtent: tileExtent,
                   controller: _poolScrollController,
                   children: <Widget>[] +
                       todoPools[_currentTodoPoolIndex]
