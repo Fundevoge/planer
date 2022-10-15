@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planer/backend/helper.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/page_elements/calendar.dart';
@@ -14,10 +15,10 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedPageIndex = myPreferences.getInt('lastPageIndex') ?? 0;
-  final List<BottomNavigationBarItem> _navigationBarItems = const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender'),
+  final List<BottomNavigationBarItem> _navigationBarItems = <BottomNavigationBarItem>[
+        const BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Kalender'),
       ] +
-      todoLists.map((e) => BottomNavigationBarItem(icon: e.listIcon, label: e.listName)).toList();
+      todoLists.map((e) => BottomNavigationBarItem(icon: e.listIcon, label: e.listName, )).toList();
   late final List<Widget> views;
 
   void _onItemTapped(int index) {
@@ -45,8 +46,10 @@ class _MainPageState extends State<MainPage> {
           items: _navigationBarItems,
           currentIndex: _selectedPageIndex,
           onTap: _onItemTapped,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          unselectedItemColor: greyedColor(_selectedPageIndex == 0 ? Colors.blueAccent : todoLists[_selectedPageIndex-1].listColor),
+          selectedItemColor: _selectedPageIndex == 0 ? Colors.blueAccent : todoLists[_selectedPageIndex-1].listColor,
         ),
       ),
     );

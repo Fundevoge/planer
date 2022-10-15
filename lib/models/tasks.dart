@@ -61,6 +61,10 @@ class TDConstraint {
             : null;
 }
 
+final RegExp isRepeatingRe1 = RegExp(" R\$");
+final RegExp isRepeatingRe2 = RegExp(" R ");
+final RegExp isMultiLineRe = RegExp("\n");
+
 // Any Task or Header:
 //  Name, Notes, timerduration?, subtasks?, listname, Date?, index, is_done, icon, color, isHighlighted, deadline?,
 //  is_repeating, constraints?
@@ -84,7 +88,7 @@ class ToH {
 
   ToH(
       {required this.name,
-      required this.notes,
+      this.notes = "",
       this.timeLimit,
       this.children,
       required this.listName,
@@ -109,6 +113,16 @@ class ToH {
       icon: const Icon(Icons.developer_mode),
       taskColor: defaultTaskColor,
     );
+  }
+
+  factory ToH.fromTextInputH(String input, Duration? timeLimit, List<ToH>? children, String listName,
+      DateTime? listDate, int index, bool isDone, Icon icon, Color taskColor, bool isHighlighted, bool isSelected,
+      DateTime? deadline, bool isRepeating, List<TDConstraint>? constraints) {
+    bool isRepeating = isRepeatingRe1.hasMatch(input) || isRepeatingRe2.hasMatch(input);
+    bool multiLine = isMultiLineRe.hasMatch(input);
+
+    // ToH retToH = ToH(name: , notes: "", listName: listName, index: index, icon: icon, taskColor: taskColor);
+    return ToH.debugFactory(index);
   }
 
   bool deadlineOverdue() {

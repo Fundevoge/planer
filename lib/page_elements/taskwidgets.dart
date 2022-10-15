@@ -77,7 +77,7 @@ class _TileToHState extends State<TileToH> {
                 width: 15,
               ),
               Text(
-                widget.toh.name,
+                widget.toh.name.replaceAll('"', ""),
                 style: widget.toh.isDone ? lineThroughStyle : taskTextStyle.copyWith(color: _textColor),
               ),
               Expanded(child: Container()),
@@ -179,7 +179,7 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                widget.toh.name,
+                widget.toh.name.replaceAll('"', ""),
                 style: taskTextStyle.copyWith(color: _textColor),
               ),
               Expanded(child: Container()),
@@ -290,7 +290,7 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
                 width: 15,
               ),
               Text(
-                widget.toh.name,
+                widget.toh.name.replaceAll('"', ""),
                 style: taskTextStyle.copyWith(color: _textColor),
               ),
               Expanded(child: Container()),

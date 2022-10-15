@@ -22,3 +22,4 @@ Key generateUid(){
 }
 
 const TextStyle taskTextStyle = TextStyle(fontSize: 24, overflow: TextOverflow.ellipsis);
+ThemeData appTheme = ThemeData();

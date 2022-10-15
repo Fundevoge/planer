@@ -36,13 +36,20 @@ class _TaskCalendarState extends State<TaskCalendar> {
   DateTime _focusedMonth = DateTime.now();
   final ChangeNotifier triggerRebuild = ChangeNotifier();
   late final PageController _pageController;
+  bool _showRecurringCalendar = myPreferences.getBool("showRecurringCalendar") ?? true;
 
   List<ToH> _getToHsForDay(DateTime day) {
-    Date currentDate = Date.fromDateTime(day);
+    Date date = Date.fromDateTime(day);
     List<ToH> dayToHs = <ToH>[];
     for (TodoList todoList in todoLists) {
+      List<ToH>? dateList = todoList.tohs[date];
+      if(dateList == null) continue;
       if (todoList.showInCalendar) {
-        dayToHs.addAll(todoList.tohs[currentDate] ?? []);
+        if(!_showRecurringCalendar) {
+          dayToHs.addAll(dateList.where((element) => !element.isRepeating));
+        } else {
+          dayToHs.addAll(todoList.tohs[date] ?? []);
+        }
       }
     }
     return dayToHs;
@@ -120,28 +127,46 @@ class _TaskCalendarState extends State<TaskCalendar> {
                   child: Row(
                     children: const <Widget>[Text("Listen"), Icon(Icons.arrow_drop_down_sharp)],
                   ),
-                  itemBuilder: (_context) => [
-                    for (TodoList todoList in todoLists)
-                      PopupMenuItem(
-                        child: StatefulBuilder(builder: (__context, _setState) {
-                          return ListTile(
-                            title: Text(todoList.listName),
-                            trailing: Theme(
-                              data: Theme.of(__context).copyWith(unselectedWidgetColor: todoList.listColor),
-                              child: Checkbox(
-                                activeColor: todoList.listColor,
-                                  value: todoList.showInCalendar,
-                                  onChanged: (bool? value) {
-                                    _setState(() {
-                                      todoList.showInCalendar = value!;
-                                      rebuilder.rebuild();
-                                    });
-                                  }),
-                            ),
-                          );
-                        }),
-                      ),
-                  ],
+                  itemBuilder: (_context) =>
+                      [
+                        PopupMenuItem(
+                          child: StatefulBuilder(builder: (__context, _setState) {
+                            return ListTile(
+                              title: const Text("Wiederkehrende"),
+                              trailing: Switch(
+                                value: _showRecurringCalendar,
+                                onChanged: (val) {
+                                  _setState(() => _showRecurringCalendar = val);
+                                  myPreferences.setBool("showRecurringCalendar", val);
+                                  rebuilder.rebuild();
+                                },
+                              ),
+                            );
+                          }),
+                        )
+                      ] +
+                      [
+                        for (TodoList todoList in todoLists)
+                          PopupMenuItem(
+                            child: StatefulBuilder(builder: (__context, _setState) {
+                              return ListTile(
+                                title: Text(todoList.listName),
+                                trailing: Theme(
+                                  data: Theme.of(__context).copyWith(unselectedWidgetColor: todoList.listColor),
+                                  child: Checkbox(
+                                      activeColor: todoList.listColor,
+                                      value: todoList.showInCalendar,
+                                      onChanged: (bool? value) {
+                                        _setState(() {
+                                          todoList.showInCalendar = value!;
+                                          rebuilder.rebuild();
+                                        });
+                                      }),
+                                ),
+                              );
+                            }),
+                          ),
+                      ],
                 ),
                 // Previous Month
                 IconButton(
