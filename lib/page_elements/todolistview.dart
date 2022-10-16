@@ -51,10 +51,21 @@ const double gestureDetectorHeight = 24;
 const double tileExtent = 62;
 
 class _ListPoolViewState extends State<ListPoolView> {
-  late double maxHeight;
+  late double _maxHeight;
   final ScrollController _todoListScrollController = ScrollController();
   final ScrollController _poolScrollController = ScrollController();
+  final TextEditingController _taskCreationController = TextEditingController();
   bool _currentlyCreatingToH = false;
+  late Color _firstNewTaskColor;
+  List<Color>? _nextColors;
+
+
+  @override
+  void initState() {
+    _firstNewTaskColor = widget.todoList.listColor;
+    super.initState();
+  }
+
 
   bool showTaskEditDialog(BuildContext context, ToH toH) {
     bool _hasChanged = false;
@@ -155,7 +166,6 @@ class _ListPoolViewState extends State<ListPoolView> {
         child: FloatingActionButton(
             onPressed: () {
               setState(() => _currentlyCreatingToH = true);
-              _nameController.text = "";
               showModalBottomSheet<bool>(
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
@@ -163,35 +173,38 @@ class _ListPoolViewState extends State<ListPoolView> {
                   isScrollControlled: true,
                   builder: (_context) => Padding(
                     padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Text('Modal BottomSheet'),
-                          ElevatedButton(
-                            child: const Text('Close BottomSheet'),
-                            onPressed: () {
-                              Navigator.pop(_context, false);
-                            },
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Text('Modal BottomSheet'),
+                            ElevatedButton(
+                              child: const Text('Close BottomSheet'),
+                              onPressed: () {
+                                Navigator.pop(context, false);
+                              },
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: _taskCreationController,
+                            autofocus: true,
                           ),
-                          Container(
-                            height: 100,
-                            color: Colors.amber,
-                            child: SizedBox(
-                                width: 300,
-                                child: TextField(
-                                  controller: _nameController,
-                                  autofocus: true,
-                                )),
-                          ),
-
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
                   )).then((value) {
                 setState(() {
                   _currentlyCreatingToH = false;
                 });
-                if (value != null) createTask();
+                if (value != null) {
+                  createTask();
+                  _taskCreationController.text = "";
+                  _nextColors = null;
+                }
               });
             },
             child: const Icon(
@@ -200,15 +213,15 @@ class _ListPoolViewState extends State<ListPoolView> {
             backgroundColor: widget.todoList.listColor),
       ),
       body: LayoutBuilder(builder: (_context, constraints) {
-        maxHeight = constraints.maxHeight;
-        topHeight ??= (maxHeight - gestureDetectorHeight) / 2;
-        bottomHeight ??= (maxHeight - gestureDetectorHeight) / 2;
-        int topFlex = (topHeight! / maxHeight * 1000000).toInt();
-        int bottomFlex = (bottomHeight! / maxHeight * 1000000).toInt();
+        _maxHeight = constraints.maxHeight;
+        topHeight ??= (_maxHeight - gestureDetectorHeight) / 2;
+        bottomHeight ??= (_maxHeight - gestureDetectorHeight) / 2;
+        int topFlex = (topHeight! / _maxHeight * 1000000).toInt();
+        int bottomFlex = (bottomHeight! / _maxHeight * 1000000).toInt();
         insertArrowTopDistance ??= 0;
-        insertArrowBottomDistance ??= maxHeight - insertArrowSize;
-        int topArrowFlex = (insertArrowTopDistance! / maxHeight * 1000000).toInt();
-        int bottomArrowFlex = (insertArrowBottomDistance! / maxHeight * 1000000).toInt();
+        insertArrowBottomDistance ??= _maxHeight - insertArrowSize;
+        int topArrowFlex = (insertArrowTopDistance! / _maxHeight * 1000000).toInt();
+        int bottomArrowFlex = (insertArrowBottomDistance! / _maxHeight * 1000000).toInt();
         return Stack(
           children: [
             Column(
@@ -392,3 +405,4 @@ class _ListPoolViewState extends State<ListPoolView> {
      );
   }
 }
+
