@@ -58,6 +58,7 @@ class _ListPoolViewState extends State<ListPoolView> {
   bool _currentlyCreatingToH = false;
   late Color _firstNewTaskColor;
   List<Color>? _nextColors;
+  int _taskCreationLineBreaks = 0;
 
 
   @override
@@ -101,6 +102,26 @@ class _ListPoolViewState extends State<ListPoolView> {
   }
 
   void createTask() {}
+
+  void _taskCreationUpdate(String s){
+    final int lineBreaks = "\n".allMatches(s).length;
+    if(lineBreaks == _taskCreationLineBreaks) return;
+
+    _taskCreationLineBreaks = lineBreaks;
+
+    setState(() {
+      if(lineBreaks == 0){
+        _nextColors = null;
+      }  else if(lineBreaks < _taskCreationLineBreaks) {
+        _nextColors!.removeLast();
+      } else{
+        if(lineBreaks == 1){
+          _nextColors  = [];
+        }
+        _nextColors!.add(_firstNewTaskColor);
+      }
+    });
+  }
 
   InsertionPosition getInsertionList() {
     return insertArrowTopDistance! + insertArrowOffset > topHeight! ? InsertionPosition.pool : InsertionPosition.list;
@@ -192,6 +213,9 @@ class _ListPoolViewState extends State<ListPoolView> {
                           child: TextField(
                             controller: _taskCreationController,
                             autofocus: true,
+                            style: const TextStyle(fontSize: 24,),
+                            strutStyle: const StrutStyle(fontSize: 24, height: 1.5,),
+                            onChanged: (val) => _taskCreationUpdate,
                           ),
                         ),
                       ],
@@ -204,6 +228,7 @@ class _ListPoolViewState extends State<ListPoolView> {
                   createTask();
                   _taskCreationController.text = "";
                   _nextColors = null;
+                  _taskCreationLineBreaks = 0;
                 }
               });
             },
