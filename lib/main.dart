@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:planer/backend/helper.dart';
 import 'package:planer/backend/persistance_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
@@ -24,6 +25,7 @@ void main() async {
           routes: <String, WidgetBuilder>{
             "/": (_) => const MainPage(),
           },
+          theme: appTheme,
           debugShowCheckedModeBanner: false,
         )),
       ),

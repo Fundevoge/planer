@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planer/backend/debug.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
@@ -21,21 +22,20 @@ final TextEditingController _nameController = TextEditingController();
 final TextEditingController _noteController = TextEditingController();
 late double? topHeight;
 late double? bottomHeight;
-late double? insertArrowHeight;
+late double? insertArrowTopDistance;
+late double? insertArrowBottomDistance;
 late int _currentTodoPoolIndex;
 late bool showCheckedTodo;
 late bool showCheckedPool;
 late Color insertArrowColor;
 
-enum InsertionPosition{
-  list,
-  pool
-}
+enum InsertionPosition { list, pool }
 
 void initListPool() {
   topHeight = myPreferences.getDouble("MainViewTopHeight");
   bottomHeight = myPreferences.getDouble("MainViewBottomHeight");
-  insertArrowHeight = myPreferences.getDouble("insertArrowHeight");
+  insertArrowTopDistance = myPreferences.getDouble("insertArrowTopDistance");
+  insertArrowBottomDistance = myPreferences.getDouble("insertArrowBottomDistance");
 
   _currentTodoPoolIndex = myPreferences.getInt("currentTodoPoolIndex") ?? 0;
 
@@ -54,6 +54,7 @@ class _ListPoolViewState extends State<ListPoolView> {
   late double maxHeight;
   final ScrollController _todoListScrollController = ScrollController();
   final ScrollController _poolScrollController = ScrollController();
+  bool _currentlyCreatingToH = false;
 
   bool showTaskEditDialog(BuildContext context, ToH toH) {
     bool _hasChanged = false;
@@ -88,17 +89,22 @@ class _ListPoolViewState extends State<ListPoolView> {
     return _hasChanged;
   }
 
-  InsertionPosition getInsertionList(){
-    return insertArrowHeight! + insertArrowOffset > topHeight! ? InsertionPosition.pool : InsertionPosition.list;
+  void createTask() {}
+
+  InsertionPosition getInsertionList() {
+    return insertArrowTopDistance! + insertArrowOffset > topHeight! ? InsertionPosition.pool : InsertionPosition.list;
   }
 
-  int getInsertionIndex(InsertionPosition insertionPosition){
-    if(insertionPosition == InsertionPosition.list){
-      double actualPosition = insertArrowHeight! + insertArrowOffset + _todoListScrollController.offset;
+  int getInsertionIndex(InsertionPosition insertionPosition) {
+    if (insertionPosition == InsertionPosition.list) {
+      double actualPosition = insertArrowTopDistance! + insertArrowOffset + _todoListScrollController.offset;
       return min(max(actualPosition / tileExtent, 0).round(), widget.todoList.tohs.length);
     }
-    if(insertionPosition == InsertionPosition.pool){
-      double actualPosition = insertArrowHeight! + insertArrowOffset - (topHeight! + gestureDetectorHeight) + _poolScrollController.offset;
+    if (insertionPosition == InsertionPosition.pool) {
+      double actualPosition = insertArrowTopDistance! +
+          insertArrowOffset -
+          (topHeight! + gestureDetectorHeight) +
+          _poolScrollController.offset;
       return min(max(actualPosition / tileExtent, 0).round(), todoPools[_currentTodoPoolIndex].tohs.length);
     }
     return 0;
@@ -125,76 +131,100 @@ class _ListPoolViewState extends State<ListPoolView> {
 
   void _handleArrowPanUpdate(DragUpdateDetails details) {
     double deltaY = details.delta.dy;
-    if (insertArrowHeight! + deltaY < 0) {
-      setState(() => insertArrowHeight = 0);
-      return;
+    if (insertArrowTopDistance! + deltaY < 0) {
+      deltaY = -insertArrowTopDistance!;
+    } else if (insertArrowBottomDistance! - deltaY < 0) {
+      deltaY = insertArrowBottomDistance!;
     }
-    if (insertArrowHeight! + deltaY + insertArrowSize > maxHeight) {
-      setState(() => insertArrowHeight = maxHeight - insertArrowSize);
-      return;
-    }
-    setState(() => insertArrowHeight = insertArrowHeight! + deltaY);
+    setState(() {
+      insertArrowTopDistance = insertArrowTopDistance! + deltaY;
+      insertArrowBottomDistance = insertArrowBottomDistance! - deltaY;
+    });
   }
 
   void _handleArrowPanEnd(DragEndDetails details) {
-    myPreferences.setDouble("insertArrowHeight", insertArrowHeight!);
+    myPreferences.setDouble("insertArrowTopDistance", insertArrowTopDistance!);
+    myPreferences.setDouble("insertArrowBottomDistance", insertArrowBottomDistance!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (_context, constraints) {
-      maxHeight = constraints.maxHeight;
-      topHeight ??= (maxHeight - gestureDetectorHeight) / 2;
-      bottomHeight ??= (maxHeight - gestureDetectorHeight) / 2;
-      insertArrowHeight ??= 0;
-      return Stack(
-        children: [
-          Column(
-            children: [
-              // Todolist
-              Ink(
-                color: const Color(0xFFFFFFFF),
-                height: topHeight!,
-                child: ListView(
-                    itemExtent: tileExtent,
-                    controller: _todoListScrollController,
-                    children: <Widget>[] +
-                        widget.todoList.tohs[widget.todoList.displayedDate]!
-                            .where((element) => !element.isDone)
-                            .map((e) =>
-                              TileToH(
-                                key: e.uid,
-                                toh: e,
-                                moveToDone: (_) => {},
-                                enterSelectionMode: () => {},
-                                showConstraints: (_) => {},
-                                startTimer: (_) => {},
-                                onTapCallback: (_) => {}))
-                            .toList() +
-                        [
-                          TextButton(
-                            child: showCheckedTodo
-                                ? Row(
-                                    children: const [
-                                      RotatedBox(
-                                        quarterTurns: 1,
-                                        child: Icon(Icons.chevron_right),
-                                      ),
-                                      Text("Abgehakte anzeigen"),
-                                    ],
-                                  )
-                                : Row(
-                                    children: const [Icon(Icons.chevron_right), Text("Abgehakte ausblenden")],
-                                  ),
+    return Scaffold(
+      floatingActionButton: Visibility(
+        visible: !_currentlyCreatingToH,
+        child: FloatingActionButton(
+            onPressed: () {
+              setState(() => _currentlyCreatingToH = true);
+              _nameController.text = "";
+              showModalBottomSheet<bool>(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_context) => Padding(
+                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Text('Modal BottomSheet'),
+                          ElevatedButton(
+                            child: const Text('Close BottomSheet'),
                             onPressed: () {
-                              setState(() => showCheckedTodo = !showCheckedTodo);
-                              myPreferences.setBool("showCheckedTodo", showCheckedTodo);
+                              Navigator.pop(_context, false);
                             },
-                          )
-                        ] +
-                        (showCheckedTodo
-                            ? widget.todoList.tohs[widget.todoList.displayedDate]!
-                                .where((element) => element.isDone)
+                          ),
+                          Container(
+                            height: 100,
+                            color: Colors.amber,
+                            child: SizedBox(
+                                width: 300,
+                                child: TextField(
+                                  controller: _nameController,
+                                  autofocus: true,
+                                )),
+                          ),
+
+                        ],
+                      ),
+                  )).then((value) {
+                setState(() {
+                  _currentlyCreatingToH = false;
+                });
+                if (value != null) createTask();
+              });
+            },
+            child: const Icon(
+              Icons.add,
+            ),
+            backgroundColor: widget.todoList.listColor),
+      ),
+      body: LayoutBuilder(builder: (_context, constraints) {
+        maxHeight = constraints.maxHeight;
+        topHeight ??= (maxHeight - gestureDetectorHeight) / 2;
+        bottomHeight ??= (maxHeight - gestureDetectorHeight) / 2;
+        int topFlex = (topHeight! / maxHeight * 1000000).toInt();
+        int bottomFlex = (bottomHeight! / maxHeight * 1000000).toInt();
+        insertArrowTopDistance ??= 0;
+        insertArrowBottomDistance ??= maxHeight - insertArrowSize;
+        int topArrowFlex = (insertArrowTopDistance! / maxHeight * 1000000).toInt();
+        int bottomArrowFlex = (insertArrowBottomDistance! / maxHeight * 1000000).toInt();
+        return Stack(
+          children: [
+            Column(
+              children: [
+                // Todolist
+                Expanded(
+                  flex: topFlex,
+                  child: Ink(
+                    color: const Color(0xFFFFFFFF),
+                    height: topHeight!,
+                    child: ListView(
+                        itemExtent: tileExtent,
+                        controller: _todoListScrollController,
+                        children: <Widget>[] +
+                            widget.todoList.tohs[widget.todoList.displayedDate]!
+                                .where((element) => !element.isDone)
                                 .map((e) => TileToH(
                                     key: e.uid,
                                     toh: e,
@@ -203,73 +233,74 @@ class _ListPoolViewState extends State<ListPoolView> {
                                     showConstraints: (_) => {},
                                     startTimer: (_) => {},
                                     onTapCallback: (_) => {}))
-                                .toList()
-                            : [])),
-              ),
-              // Spacer between
-              GestureDetector(
-                onPanUpdate: _handlePanUpdate,
-                onPanEnd: _handlePanEnd,
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFF303030),
-                    ),
-                    color: const Color(0xFFBABABA),
+                                .toList() +
+                            [
+                              TextButton(
+                                child: showCheckedTodo
+                                    ? Row(
+                                        children: const [
+                                          RotatedBox(
+                                            quarterTurns: 1,
+                                            child: Icon(Icons.chevron_right),
+                                          ),
+                                          Text("Abgehakte anzeigen"),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: const [Icon(Icons.chevron_right), Text("Abgehakte ausblenden")],
+                                      ),
+                                onPressed: () {
+                                  setState(() => showCheckedTodo = !showCheckedTodo);
+                                  myPreferences.setBool("showCheckedTodo", showCheckedTodo);
+                                },
+                              )
+                            ] +
+                            (showCheckedTodo
+                                ? widget.todoList.tohs[widget.todoList.displayedDate]!
+                                    .where((element) => element.isDone)
+                                    .map((e) => TileToH(
+                                        key: e.uid,
+                                        toh: e,
+                                        moveToDone: (_) => {},
+                                        enterSelectionMode: () => {},
+                                        showConstraints: (_) => {},
+                                        startTimer: (_) => {},
+                                        onTapCallback: (_) => {}))
+                                    .toList()
+                                : [])),
                   ),
-                  height: gestureDetectorHeight,
-                  child: const InkWell(
-                    child: Center(
-                      child: Icon(Icons.menu),
+                ),
+                // Spacer between
+                GestureDetector(
+                  onVerticalDragUpdate: _handlePanUpdate,
+                  onVerticalDragEnd: _handlePanEnd,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFF303030),
+                      ),
+                      color: const Color(0xFFBABABA),
+                    ),
+                    height: gestureDetectorHeight,
+                    child: const InkWell(
+                      child: Center(
+                        child: Icon(Icons.menu),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Pool
-              Ink(
-                color: const Color(0xFFFFFFFF),
-                height: bottomHeight!,
-                child: ListView(
-                  itemExtent: tileExtent,
-                  controller: _poolScrollController,
-                  children: <Widget>[] +
-                      todoPools[_currentTodoPoolIndex]
-                          .tohs
-                          .where((element) => !element.isDone)
-                          .map((e) => TileToH(
-                              key: e.uid,
-                              toh: e,
-                              moveToDone: (_) => {},
-                              enterSelectionMode: () => {},
-                              showConstraints: (_) => {},
-                              startTimer: (_) => {},
-                              onTapCallback: (_) => {}))
-                          .toList() +
-                      [
-                        TextButton(
-                          child: showCheckedPool
-                              ? Row(
-                                  children: const [
-                                    RotatedBox(
-                                      quarterTurns: 1,
-                                      child: Icon(Icons.chevron_right),
-                                    ),
-                                    Text("Abgehakte anzeigen"),
-                                  ],
-                                )
-                              : Row(
-                                  children: const [Icon(Icons.chevron_right), Text("Abgehakte ausblenden")],
-                                ),
-                          onPressed: () {
-                            setState(() => showCheckedPool = !showCheckedPool);
-                            myPreferences.setBool("showCheckedPool", showCheckedPool);
-                          },
-                        ),
-                      ] +
-                      (showCheckedPool
-                          ? todoPools[_currentTodoPoolIndex]
+                // Pool
+                Expanded(
+                  flex: bottomFlex,
+                  child: Ink(
+                    color: const Color(0xFFFFFFFF),
+                    child: ListView(
+                      itemExtent: tileExtent,
+                      controller: _poolScrollController,
+                      children: <Widget>[] +
+                          todoPools[_currentTodoPoolIndex]
                               .tohs
-                              .where((element) => element.isDone)
+                              .where((element) => !element.isDone)
                               .map((e) => TileToH(
                                   key: e.uid,
                                   toh: e,
@@ -278,30 +309,86 @@ class _ListPoolViewState extends State<ListPoolView> {
                                   showConstraints: (_) => {},
                                   startTimer: (_) => {},
                                   onTapCallback: (_) => {}))
-                              .toList()
-                          : []),
+                              .toList() +
+                          [
+                            TextButton(
+                              child: showCheckedPool
+                                  ? Row(
+                                      children: const [
+                                        RotatedBox(
+                                          quarterTurns: 1,
+                                          child: Icon(Icons.chevron_right),
+                                        ),
+                                        Text("Abgehakte anzeigen"),
+                                      ],
+                                    )
+                                  : Row(
+                                      children: const [Icon(Icons.chevron_right), Text("Abgehakte ausblenden")],
+                                    ),
+                              onPressed: () {
+                                setState(() => showCheckedPool = !showCheckedPool);
+                                myPreferences.setBool("showCheckedPool", showCheckedPool);
+                              },
+                            ),
+                          ] +
+                          (showCheckedPool
+                              ? todoPools[_currentTodoPoolIndex]
+                                  .tohs
+                                  .where((element) => element.isDone)
+                                  .map((e) => TileToH(
+                                      key: e.uid,
+                                      toh: e,
+                                      moveToDone: (_) => {},
+                                      enterSelectionMode: () => {},
+                                      showConstraints: (_) => {},
+                                      startTimer: (_) => {},
+                                      onTapCallback: (_) => {}))
+                                  .toList()
+                              : []),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Positioned(
-            right: 2,
-            top: insertArrowHeight,
-            child: GestureDetector(
-              child: SizedBox(
-                width: 30,
-                child: Icon(
-                  Icons.arrow_left_sharp,
-                  color: insertArrowColor,
-                  size: insertArrowSize,
-                ),
-              ),
-              onPanUpdate: _handleArrowPanUpdate,
-              onPanEnd: _handleArrowPanEnd,
+              ],
             ),
-          )
-        ],
-      ); // create function here to adapt to the parent widget's constraints
-    });
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  flex: topArrowFlex,
+                  child: SizedBox(
+                    height: insertArrowTopDistance!,
+                    width: 1,
+                  ),
+                ),
+                DebugContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 2.0),
+                    child: GestureDetector(
+                      child: SizedBox(
+                        width: 30,
+                        child: Icon(
+                          Icons.arrow_left_sharp,
+                          color: insertArrowColor,
+                          size: insertArrowSize,
+                        ),
+                      ),
+                      onVerticalDragUpdate: _handleArrowPanUpdate,
+                      onVerticalDragEnd: _handleArrowPanEnd,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: bottomArrowFlex,
+                  child: SizedBox(
+                    height: insertArrowBottomDistance,
+                    width: 1,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
+     );
   }
 }
