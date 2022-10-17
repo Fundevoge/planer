@@ -3,6 +3,9 @@ import 'package:planer/backend/debug.dart';
 import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
+import 'package:planer/packages/flutter_colorpicker/lib/flutter_colorpicker.dart';
+// import 'package:planer/packages/keep_keyboard_popup_menu/lib/keep_keyboard_popup_menu.dart';
+import 'package:keep_keyboard_popup_menu/keep_keyboard_popup_menu.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
 import 'dart:math';
 
@@ -28,6 +31,7 @@ late int _currentTodoPoolIndex;
 late bool showCheckedTodo;
 late bool showCheckedPool;
 late Color insertArrowColor;
+late List<Color> sharedColorHistory;
 
 enum InsertionPosition { list, pool }
 
@@ -43,12 +47,17 @@ void initListPool() {
   showCheckedPool = myPreferences.getBool("showCheckedPool") ?? false;
 
   insertArrowColor = Color(myPreferences.getInt("insertArrowColor") ?? 0xFFFF0000);
+  sharedColorHistory =
+      (myPreferences.getStringList("_sharedColorHistory") ?? <String>[]).map((e) => Color(int.parse(e))).toList();
 }
 
 const double insertArrowSize = 48;
 const double insertArrowOffset = insertArrowSize / 2;
 const double gestureDetectorHeight = 24;
 const double tileExtent = 62;
+const double taskCreateFontSize = 24;
+const double taskCreateStrutHeight = 36;
+const double taskCreateColorBoxPadding = 4.0;
 
 class _ListPoolViewState extends State<ListPoolView> {
   late double _maxHeight;
@@ -59,14 +68,14 @@ class _ListPoolViewState extends State<ListPoolView> {
   late Color _firstNewTaskColor;
   List<Color>? _nextColors;
   int _taskCreationLineBreaks = 0;
-
+  late Color _pickedColor;
 
   @override
   void initState() {
     _firstNewTaskColor = widget.todoList.listColor;
+    _pickedColor = widget.todoList.listColor;
     super.initState();
   }
-
 
   bool showTaskEditDialog(BuildContext context, ToH toH) {
     bool _hasChanged = false;
@@ -103,20 +112,20 @@ class _ListPoolViewState extends State<ListPoolView> {
 
   void createTask() {}
 
-  void _taskCreationUpdate(String s){
+  void _taskCreationUpdate(String s) {
     final int lineBreaks = "\n".allMatches(s).length;
-    if(lineBreaks == _taskCreationLineBreaks) return;
+    if (lineBreaks == _taskCreationLineBreaks) return;
 
     _taskCreationLineBreaks = lineBreaks;
 
     setState(() {
-      if(lineBreaks == 0){
+      if (lineBreaks == 0) {
         _nextColors = null;
-      }  else if(lineBreaks < _taskCreationLineBreaks) {
+      } else if (lineBreaks < _taskCreationLineBreaks) {
         _nextColors!.removeLast();
-      } else{
-        if(lineBreaks == 1){
-          _nextColors  = [];
+      } else {
+        if (lineBreaks == 1) {
+          _nextColors = [];
         }
         _nextColors!.add(_firstNewTaskColor);
       }
@@ -193,34 +202,79 @@ class _ListPoolViewState extends State<ListPoolView> {
                   context: context,
                   isScrollControlled: true,
                   builder: (_context) => Padding(
-                    padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: Row(
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Text('Modal BottomSheet'),
-                            ElevatedButton(
-                              child: const Text('Close BottomSheet'),
-                              onPressed: () {
-                                Navigator.pop(context, false);
-                              },
+                        padding: EdgeInsets.only(top: 10, bottom: MediaQuery.of(context).viewInsets.bottom),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: ([_firstNewTaskColor] + (_nextColors ?? []))
+                                  .asMap()
+                                  .entries
+                                  .map(
+                                    (entry) => KeepKeyboardPopupMenuButton(
+                                      child: Ink(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: taskCreateColorBoxPadding,
+                                          horizontal: 2.0,
+                                        ),
+                                        height: taskCreateStrutHeight - 2 * taskCreateColorBoxPadding,
+                                        width: 20,
+                                        decoration: BoxDecoration(
+                                            color: entry.value,
+                                            border: Border.all(),
+                                            borderRadius: const BorderRadius.all(Radius.circular(1.0))),
+                                      ),
+                                      // onCanceled: (){if(!sharedColorHistory.contains(_pickedColor)) sharedColorHistory.insert(0, _pickedColor);},
+                                      menuItemBuilder: (BuildContext context, closeMenu) => [
+                                        KeepKeyboardPopupMenuItem(
+                                          child: Ink(width: 100, height: 100, color: Color(0xFFFF0000),) /*ColorPicker(
+                                            pickerColor: _pickedColor,
+                                            onColorChanged: (Color value) {
+                                              setState(() {
+                                                _pickedColor = value;
+                                                if (entry.key == 0) {
+                                                  _firstNewTaskColor = value;
+                                                } else {
+                                                  _nextColors![entry.key - 1] = value;
+                                                }
+                                              });
+                                            },
+                                            labelTypes: const [],
+                                            enableAlpha: false,
+                                            paletteType: PaletteType.hsl,
+                                            colorPickerWidth: 300,
+                                            uniqueHistoryColor: widget.todoList.listColor,
+                                            sharedColorHistory: sharedColorHistory,
+                                          ),*/
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                            Expanded(
+                              child: TextField(
+                                controller: _taskCreationController,
+                                autofocus: true,
+                                style: const TextStyle(
+                                  fontSize: taskCreateFontSize,
+                                ),
+                                strutStyle: const StrutStyle(
+                                  fontSize: taskCreateFontSize,
+                                  height: taskCreateStrutHeight / taskCreateFontSize,
+                                ),
+                                onChanged: (val) => _taskCreationUpdate,
+                              ),
+                            ),
+                            OutlinedButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Icon(Icons.upload),
                             ),
                           ],
                         ),
-                        Expanded(
-                          child: TextField(
-                            controller: _taskCreationController,
-                            autofocus: true,
-                            style: const TextStyle(fontSize: 24,),
-                            strutStyle: const StrutStyle(fontSize: 24, height: 1.5,),
-                            onChanged: (val) => _taskCreationUpdate,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )).then((value) {
+                      )).then((value) {
                 setState(() {
                   _currentlyCreatingToH = false;
                 });
@@ -427,7 +481,6 @@ class _ListPoolViewState extends State<ListPoolView> {
           ],
         );
       }),
-     );
+    );
   }
 }
-

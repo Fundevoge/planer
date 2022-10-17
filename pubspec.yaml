@@ -36,6 +36,8 @@ dependencies:
   path_provider: ^2.0.11
   flutter_iconpicker: ^3.2.1
   provider: ^6.0.0
+  flutter_keyboard_visibility: ^5.0.0
+  # keep_keyboard_popup_menu: ^2.0.5
 
 
   # The following adds the Cupertino Icons font to your application.
