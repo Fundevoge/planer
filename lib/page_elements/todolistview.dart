@@ -4,8 +4,7 @@ import 'package:planer/backend/preference_manager.dart';
 import 'package:planer/models/tasks.dart';
 import 'package:planer/models/todolist.dart';
 import 'package:planer/packages/flutter_colorpicker/lib/flutter_colorpicker.dart';
-// import 'package:planer/packages/keep_keyboard_popup_menu/lib/keep_keyboard_popup_menu.dart';
-import 'package:keep_keyboard_popup_menu/keep_keyboard_popup_menu.dart';
+import 'package:planer/page_elements/own_popup.dart';
 import 'package:planer/page_elements/taskwidgets.dart';
 import 'dart:math';
 
@@ -57,7 +56,7 @@ const double gestureDetectorHeight = 24;
 const double tileExtent = 62;
 const double taskCreateFontSize = 24;
 const double taskCreateStrutHeight = 36;
-const double taskCreateColorBoxPadding = 4.0;
+const double taskCreateColorBoxPadding = 8.0;
 
 class _ListPoolViewState extends State<ListPoolView> {
   late double _maxHeight;
@@ -66,14 +65,10 @@ class _ListPoolViewState extends State<ListPoolView> {
   final TextEditingController _taskCreationController = TextEditingController();
   bool _currentlyCreatingToH = false;
   late Color _firstNewTaskColor;
-  List<Color>? _nextColors;
-  int _taskCreationLineBreaks = 0;
-  late Color _pickedColor;
 
   @override
   void initState() {
     _firstNewTaskColor = widget.todoList.listColor;
-    _pickedColor = widget.todoList.listColor;
     super.initState();
   }
 
@@ -110,27 +105,7 @@ class _ListPoolViewState extends State<ListPoolView> {
     return _hasChanged;
   }
 
-  void createTask() {}
-
-  void _taskCreationUpdate(String s) {
-    final int lineBreaks = "\n".allMatches(s).length;
-    if (lineBreaks == _taskCreationLineBreaks) return;
-
-    _taskCreationLineBreaks = lineBreaks;
-
-    setState(() {
-      if (lineBreaks == 0) {
-        _nextColors = null;
-      } else if (lineBreaks < _taskCreationLineBreaks) {
-        _nextColors!.removeLast();
-      } else {
-        if (lineBreaks == 1) {
-          _nextColors = [];
-        }
-        _nextColors!.add(_firstNewTaskColor);
-      }
-    });
-  }
+  void createTasks(List<Color>? additionalColors) {}
 
   InsertionPosition getInsertionList() {
     return insertArrowTopDistance! + insertArrowOffset > topHeight! ? InsertionPosition.pool : InsertionPosition.list;
@@ -197,93 +172,24 @@ class _ListPoolViewState extends State<ListPoolView> {
             onPressed: () {
               setState(() => _currentlyCreatingToH = true);
               showModalBottomSheet<bool>(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_context) => Padding(
-                        padding: EdgeInsets.only(top: 10, bottom: MediaQuery.of(context).viewInsets.bottom),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: ([_firstNewTaskColor] + (_nextColors ?? []))
-                                  .asMap()
-                                  .entries
-                                  .map(
-                                    (entry) => KeepKeyboardPopupMenuButton(
-                                      child: Ink(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: taskCreateColorBoxPadding,
-                                          horizontal: 2.0,
-                                        ),
-                                        height: taskCreateStrutHeight - 2 * taskCreateColorBoxPadding,
-                                        width: 20,
-                                        decoration: BoxDecoration(
-                                            color: entry.value,
-                                            border: Border.all(),
-                                            borderRadius: const BorderRadius.all(Radius.circular(1.0))),
-                                      ),
-                                      // onCanceled: (){if(!sharedColorHistory.contains(_pickedColor)) sharedColorHistory.insert(0, _pickedColor);},
-                                      menuItemBuilder: (BuildContext context, closeMenu) => [
-                                        KeepKeyboardPopupMenuItem(
-                                          child: Ink(width: 100, height: 100, color: Color(0xFFFF0000),) /*ColorPicker(
-                                            pickerColor: _pickedColor,
-                                            onColorChanged: (Color value) {
-                                              setState(() {
-                                                _pickedColor = value;
-                                                if (entry.key == 0) {
-                                                  _firstNewTaskColor = value;
-                                                } else {
-                                                  _nextColors![entry.key - 1] = value;
-                                                }
-                                              });
-                                            },
-                                            labelTypes: const [],
-                                            enableAlpha: false,
-                                            paletteType: PaletteType.hsl,
-                                            colorPickerWidth: 300,
-                                            uniqueHistoryColor: widget.todoList.listColor,
-                                            sharedColorHistory: sharedColorHistory,
-                                          ),*/
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: _taskCreationController,
-                                autofocus: true,
-                                style: const TextStyle(
-                                  fontSize: taskCreateFontSize,
-                                ),
-                                strutStyle: const StrutStyle(
-                                  fontSize: taskCreateFontSize,
-                                  height: taskCreateStrutHeight / taskCreateFontSize,
-                                ),
-                                onChanged: (val) => _taskCreationUpdate,
-                              ),
-                            ),
-                            OutlinedButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Icon(Icons.upload),
-                            ),
-                          ],
-                        ),
-                      )).then((value) {
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25))),
+                context: context,
+                isScrollControlled: true,
+                builder: (_context) => Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: TaskCreationSheetContent(
+                    taskCreationController: _taskCreationController,
+                    listColor: widget.todoList.listColor,
+                    doneCallback: createTasks,
+                    firstNewColorChanged: (Color col) => _firstNewTaskColor = col,
+                    firstNewTaskColor: _firstNewTaskColor,
+                  ),
+                ),
+              ).then((value) {
                 setState(() {
                   _currentlyCreatingToH = false;
                 });
-                if (value != null) {
-                  createTask();
-                  _taskCreationController.text = "";
-                  _nextColors = null;
-                  _taskCreationLineBreaks = 0;
-                }
               });
             },
             child: const Icon(
@@ -481,6 +387,161 @@ class _ListPoolViewState extends State<ListPoolView> {
           ],
         );
       }),
+    );
+  }
+}
+
+class TaskCreationSheetContent extends StatefulWidget {
+  final TextEditingController taskCreationController;
+  final Color listColor;
+  final Color firstNewTaskColor;
+  final void Function(List<Color>?) doneCallback;
+  final void Function(Color) firstNewColorChanged;
+  const TaskCreationSheetContent(
+      {Key? key,
+      required this.taskCreationController,
+      required this.listColor,
+      required this.doneCallback,
+      required this.firstNewColorChanged,
+      required this.firstNewTaskColor})
+      : super(key: key);
+
+  @override
+  State<TaskCreationSheetContent> createState() => _TaskCreationSheetContentState();
+}
+
+class _TaskCreationSheetContentState extends State<TaskCreationSheetContent> {
+  List<Color>? _nextColors;
+  int _taskCreationLineBreaks = 0;
+  late Color _pickedColor;
+  late Color _firstNewTaskColor;
+
+  @override
+  void initState() {
+    _pickedColor = widget.listColor;
+    _firstNewTaskColor = widget.firstNewTaskColor;
+    super.initState();
+  }
+
+  void _taskCreationUpdate(String s) {
+    if (s.endsWith("\n\n")) {
+      done();
+      return;
+    }
+
+    final int lineBreaks = "\n".allMatches(s).length;
+    if (lineBreaks == _taskCreationLineBreaks || s.endsWith("\n")) return;
+
+    setState(() {
+      if (lineBreaks == 0) {
+        _nextColors = null;
+      } else if (lineBreaks < _taskCreationLineBreaks) {
+        _nextColors!.removeLast();
+      } else {
+        if (lineBreaks == 1) {
+          _nextColors = [];
+        }
+        _nextColors!.add(_firstNewTaskColor);
+        // _rebuilder2.rebuild();
+      }
+    });
+
+    _taskCreationLineBreaks = lineBreaks;
+  }
+
+  void done() {
+    if(widget.taskCreationController.text.endsWith("\n")){
+      widget.taskCreationController.text.trim();
+      (_nextColors?.length ?? 1) == 1 ? _nextColors = null : _nextColors!.removeLast();
+    }
+    widget.doneCallback(_nextColors);
+    widget.taskCreationController.text = "";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: ([_firstNewTaskColor] + (_nextColors ?? []))
+                .asMap()
+                .entries
+                .map(
+                  (entry) => WithKeepKeyboardPopupMenu(
+                    childBuilder: (context, openPopup) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: taskCreateColorBoxPadding,
+                        horizontal: 2.0,
+                      ),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        child: Ink(
+                          height: taskCreateStrutHeight - 2 * taskCreateColorBoxPadding,
+                          width: 20,
+                          decoration: BoxDecoration(
+                              color: entry.value,
+                              border: Border.all(),
+                              borderRadius: const BorderRadius.all(Radius.circular(1.0))),
+                        ),
+                        onTap: openPopup,
+                      ),
+                    ),
+                    onCanceled: () {
+                      if (!sharedColorHistory.contains(_pickedColor) && _pickedColor != widget.listColor) {
+                        sharedColorHistory.insert(0, _pickedColor);
+                      }
+                    },
+                    menuBuilder: (BuildContext context, closePopup) => ColorPicker(
+                      pickerColor: _pickedColor,
+                      onColorChanged: (Color value) {
+                        setState(() {
+                          _pickedColor = value;
+                          if (entry.key == 0) {
+                            _firstNewTaskColor = value;
+                            widget.firstNewColorChanged(value);
+                          } else {
+                            _nextColors![entry.key - 1] = value;
+                          }
+                        });
+                      },
+                      labelTypes: const [],
+                      enableAlpha: false,
+                      paletteType: PaletteType.hsl,
+                      colorPickerWidth: 300,
+                      uniqueHistoryColor: widget.listColor,
+                      sharedColorHistory: sharedColorHistory,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        Expanded(
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            maxLines: null,
+            controller: widget.taskCreationController,
+            autofocus: true,
+            style: const TextStyle(
+              fontSize: taskCreateFontSize,
+            ),
+            strutStyle: const StrutStyle(
+              fontSize: taskCreateFontSize,
+              height: taskCreateStrutHeight / taskCreateFontSize,
+            ),
+            onChanged: (val) => _taskCreationUpdate(val),
+          ),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            done();
+            Navigator.pop(context, false);
+          },
+          child: const Icon(Icons.upload),
+        ),
+      ],
     );
   }
 }

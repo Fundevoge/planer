@@ -16,19 +16,22 @@ import 'page_elements/todolistview.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
-  initializeDateFormatting('de_DE').then((_) => runApp(
-      ChangeNotifierProvider(
-        create: (context) => Rebuilder(),
-        child: MaterialApp(
-          title: "Planer",
-          initialRoute: "/",
-          routes: <String, WidgetBuilder>{
-            "/": (_) => const MainPage(),
-          },
-          theme: appTheme,
-          debugShowCheckedModeBanner: false,
-        )),
-      ),
+  initializeDateFormatting('de_DE').then(
+    (_) => runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider<Rebuilder>(create: (context) => Rebuilder()),
+          ],
+          child: MaterialApp(
+            title: "Planer",
+            initialRoute: "/",
+            routes: <String, WidgetBuilder>{
+              "/": (_) => const MainPage(),
+            },
+            theme: appTheme,
+            debugShowCheckedModeBanner: false,
+          )),
+    ),
   );
 }
 
@@ -36,14 +39,13 @@ Future<void> init() async {
   await initPreferences();
   initPreState();
   bool doOneTimeSetup = await jsonStorageSetup();
-  if(doOneTimeSetup) {
+  if (doOneTimeSetup) {
     initialOneTimeSetup();
   }
   initPostState();
 }
 
 Future<bool> jsonStorageSetup() async {
-
   final String directoryPath = (await getApplicationDocumentsDirectory()).path;
   taskListsFile = File("$directoryPath/taskLists.json");
   taskPoolsFile = File("$directoryPath/taskPools.json");
@@ -53,7 +55,7 @@ Future<bool> jsonStorageSetup() async {
 
   final bool exists = await taskListsFile.exists();
 
-  if(exists) {
+  if (exists) {
     final String taskListContents = await taskListsFile.readAsString();
     final String taskPoolsContents = await taskPoolsFile.readAsString();
     final String structureToHContents = await structureToHFile.readAsString();
@@ -62,8 +64,7 @@ Future<bool> jsonStorageSetup() async {
     initTodoLists(taskListContents);
     initTodoPools(taskPoolsContents);
     initOtherToHs(structureToHContents, periodicToHContents, templateToH);
-  }
-  else{
+  } else {
     await taskListsFile.create(recursive: true);
     await taskPoolsFile.create(recursive: true);
     await structureToHFile.create(recursive: true);
@@ -84,6 +85,6 @@ void initPreState() {
   initListPool();
 }
 
-void initPostState(){
+void initPostState() {
   initListColors();
 }
