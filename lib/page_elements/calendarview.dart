@@ -250,7 +250,7 @@ class _TaskCalendarState extends State<TaskCalendar> {
                       toh: dayToHs[index],
                       moveToDone: (int i) {},
                       enterSelectionMode: () {},
-                      showConstraints: (List<TDConstraint>? c) {},
+                      showConstraints: (List<ToH>? c) {},
                       startTimer: (Duration d) {},
                       onTapCallback: (ToH toh) {},
                     ),

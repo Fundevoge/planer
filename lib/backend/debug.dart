@@ -10,7 +10,7 @@ class DebugContainer extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(
           color: Color(0xFFFF0000),
-          width: 0.1
+          width: 3
         ),
       ),
       child: child,

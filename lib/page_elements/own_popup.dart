@@ -184,15 +184,15 @@ class AnimatedPopupMenu extends StatefulWidget {
 }
 
 class AnimatedPopupMenuState extends State<AnimatedPopupMenu> with TickerProviderStateMixin {
-  static const ENTER_DURATION = Duration(milliseconds: 220);
+  static const ENTER_DURATION = Duration(milliseconds: 160);
   static final CurveTween enterOpacityTween = CurveTween(
-    curve: const Interval(0.0, 90 / 220, curve: Curves.linear),
+    curve: const Interval(0.0, 90 / 160, curve: Curves.linear),
   );
   static final CurveTween enterSizeTween = CurveTween(
     curve: Curves.easeOutCubic,
   );
 
-  static const EXIT_DURATION = Duration(milliseconds: 260);
+  static const EXIT_DURATION = Duration(milliseconds: 220);
   static final CurveTween exitOpacityTween = CurveTween(
     curve: Curves.linear,
   );
@@ -510,7 +510,7 @@ Offset _defaultCalculatePopupPosition(
   if (y < kMenuScreenPadding + overlayRect.top) {
     y = kMenuScreenPadding + overlayRect.top;
   } else if (y + menuSize.height > overlayRect.bottom - kMenuScreenPadding) {
-    y = overlayRect.bottom - menuSize.height - kMenuScreenPadding;
+    y = overlayRect.bottom - menuSize.height - kMenuScreenPadding - 60;
   }
   return Offset(x, y);
 }

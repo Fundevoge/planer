@@ -81,7 +81,6 @@ void initialOneTimeSetup() {
 
 void initPreState() {
   initTaskColors();
-  initIcon();
   initListPool();
 }
 

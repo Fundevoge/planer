@@ -12,7 +12,7 @@ class TileToH extends StatefulWidget {
   final ToH toh;
   final void Function(int) moveToDone;
   final void Function() enterSelectionMode;
-  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(List<ToH>?) showConstraints;
   final void Function(Duration) startTimer;
   final void Function(ToH) onTapCallback;
 
@@ -33,7 +33,7 @@ class TileToH extends StatefulWidget {
 class _TileToHState extends State<TileToH> {
   @override
   Widget build(BuildContext context) {
-    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
+    final bool hasConstraints = widget.toh.requiredToHs?.isNotEmpty ?? false;
     final Color tohColor = widget.toh.taskColor;
     final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
@@ -116,13 +116,22 @@ class _TileToHState extends State<TileToH> {
                         children: [
                           if (widget.toh.timeLimit != null)
                             IconButton(
-                                onPressed: () => widget.startTimer(widget.toh.timeLimit!), icon: const Icon(Icons.alarm)),
+                                onPressed: () => widget.startTimer(widget.toh.timeLimit!),
+                                icon: const Icon(Icons.alarm)),
                           if (hasConstraints)
                             IconButton(
                               icon: const Icon(CupertinoIcons.exclamationmark),
-                              onPressed: () => widget.showConstraints(widget.toh.constraints),
+                              onPressed: () => widget.showConstraints(widget.toh.requiredToHs),
                             ),
-                          ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                          ReorderableDragStartListener(
+                            index: widget.toh.index,
+                            child: widget.toh.icon ??
+                                Ink(
+                                  color: _tileColor,
+                                  width: Theme.of(context).iconTheme.size,
+                                  height: Theme.of(context).iconTheme.size,
+                                ),
+                          ),
                           Checkbox(
                               value: widget.toh.isDone,
                               onChanged: (val) {
@@ -165,7 +174,7 @@ class _TileToHState extends State<TileToH> {
 class EditModeTileToH extends StatefulWidget {
   final ToH toh;
   final void Function() enterSelectionMode;
-  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(List<ToH>?) showConstraints;
   final void Function(ToH) onTapCallback;
 
   const EditModeTileToH(
@@ -183,7 +192,7 @@ class EditModeTileToH extends StatefulWidget {
 class _EditModeTileToHState extends State<EditModeTileToH> {
   @override
   Widget build(BuildContext context) {
-    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
+    final bool hasConstraints = widget.toh.requiredToHs?.isNotEmpty ?? false;
     final Color tohColor = widget.toh.taskColor;
     final Color _tileColor = hasConstraints ? greyedColor(tohColor) : tohColor;
     final Color _rawBoundaryColor = widget.toh.isSelected ? invert(tohColor) : tohColor;
@@ -230,9 +239,17 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
                       if (hasConstraints)
                         IconButton(
                           icon: const Icon(CupertinoIcons.exclamationmark),
-                          onPressed: () => widget.showConstraints(widget.toh.constraints),
+                          onPressed: () => widget.showConstraints(widget.toh.requiredToHs),
                         ),
-                      ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                      ReorderableDragStartListener(
+                        index: widget.toh.index,
+                        child: widget.toh.icon ??
+                            Ink(
+                              color: _tileColor,
+                              width: Theme.of(context).iconTheme.size,
+                              height: Theme.of(context).iconTheme.size,
+                            ),
+                      ),
                     ],
                     mainAxisSize: MainAxisSize.min,
                   ),
@@ -265,7 +282,7 @@ class _EditModeTileToHState extends State<EditModeTileToH> {
 class ReadOnlyTileToH extends StatefulWidget {
   final ToH toh;
   final void Function() enterSelectionMode;
-  final void Function(List<TDConstraint>?) showConstraints;
+  final void Function(List<ToH>?) showConstraints;
   final void Function(ToH) onTapCallback;
   const ReadOnlyTileToH(
       {Key? key,
@@ -282,7 +299,7 @@ class ReadOnlyTileToH extends StatefulWidget {
 class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
   @override
   Widget build(BuildContext context) {
-    final bool hasConstraints = widget.toh.constraints?.isNotEmpty ?? false;
+    final bool hasConstraints = widget.toh.requiredToHs?.isNotEmpty ?? false;
     const Color tohColor = Color(0xFF999999);
     const Color constrainedToHColor = Color(0xFFCCCCCC);
     const Color selectedBoundaryColor = Color(0xFF444499);
@@ -349,9 +366,17 @@ class _ReadOnlyTileToHState extends State<ReadOnlyTileToH> {
                       if (hasConstraints)
                         IconButton(
                           icon: const Icon(CupertinoIcons.exclamationmark),
-                          onPressed: () => widget.showConstraints(widget.toh.constraints),
+                          onPressed: () => widget.showConstraints(widget.toh.requiredToHs),
                         ),
-                      ReorderableDragStartListener(index: widget.toh.index, child: widget.toh.icon),
+                      ReorderableDragStartListener(
+                        index: widget.toh.index,
+                        child: widget.toh.icon ??
+                            Ink(
+                              color: _tileColor,
+                              width: Theme.of(context).iconTheme.size,
+                              height: Theme.of(context).iconTheme.size,
+                            ),
+                      ),
                       Checkbox(
                         checkColor: const Color(0xFFD6D6FF),
                         value: widget.toh.isDone,

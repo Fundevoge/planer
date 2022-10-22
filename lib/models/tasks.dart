@@ -3,7 +3,7 @@ import 'package:flutter_iconpicker/Serialization/iconDataSerialization.dart';
 import 'package:planer/backend/preference_manager.dart';
 import '../backend/helper.dart';
 
-enum StructureTaskActive { always, workdays, holidays }
+enum ToHActive { always, workdays, holidays }
 
 // 0 For Structure, 1 for repeating, 2 otherwise default
 late Color structureTaskColor;
@@ -15,10 +15,9 @@ void initTaskColors() {
   defaultTaskColor = Color(myPreferences.getInt('defaultTaskColor') ?? 0xFFFFFFFF);
 }
 
-late Icon defaultIcon;
-
-void initIcon() {
-  defaultIcon = Icon(IconData(myPreferences.getInt('defaultIcon') ?? const Icon(Icons.developer_mode).icon!.codePoint));
+enum PeriodicTypes {
+  weekRhythm,
+  other
 }
 
 class Periodicity {
@@ -43,23 +42,6 @@ class Periodicity {
         baseOffsets = [for (String s in json["baseOffsets"]) Duration(seconds: int.parse(s))];
 }
 
-class TDConstraint {
-  bool external;
-  List<ToH>? requiredTasks;
-  TDConstraint({required this.external, this.requiredTasks});
-  Map<String, dynamic> toJson() {
-    final List<Map<String, dynamic>>? jsonChildren =
-        (requiredTasks?.isNotEmpty ?? false) ? List.from([for (ToH child in requiredTasks!) child.toJson()]) : null;
-    return {"external": external, "requiredTasks": jsonChildren};
-  }
-
-  TDConstraint.fromJson(Map<String, dynamic> json)
-      : external = json["external"],
-        requiredTasks = json["requiredTasks"] != null
-            ? [for (Map<String, dynamic> jsonChild in json["requiredTasks"]) ToH.fromJson(jsonChild)]
-            : null;
-}
-
 final RegExp isRepeatingRe1 = RegExp(" R\$");
 final RegExp isRepeatingRe2 = RegExp(" R ");
 final RegExp isMultiLineRe = RegExp("\n");
@@ -72,37 +54,39 @@ class ToH {
   String name;
   String notes;
   Duration? timeLimit;
+  ToH? parent;
   List<ToH>? children;
   String listName;
-  DateTime? listDate;
+  DateTime insertionTime;
   int index;
   bool isDone;
-  Icon icon;
+  Icon? icon;
   Color taskColor;
   bool isHighlighted;
   bool isSelected;
   DateTime? deadline;
   bool isRepeating;
-  List<TDConstraint>? constraints;
+  List<ToH>? requiredToHs;
   int recursionDepth;
-
+  int constraintDepth;
+  // Parent and constraintDepth are only required for construction of the list
   ToH(
       {required this.name,
       this.notes = "",
       this.timeLimit,
       this.children,
       required this.listName,
-      this.listDate,
+      required this.insertionTime,
       required this.index,
       this.isDone = false,
-      required this.icon,
+      this.icon,
       required this.taskColor,
       this.isHighlighted = false,
       this.isSelected = false,
       this.deadline,
       this.isRepeating = false,
-      this.constraints,
-      this.recursionDepth = 0})
+      this.requiredToHs,
+      this.recursionDepth = 0, this.constraintDepth = 0})
       : uid = generateUid();
 
   factory ToH.debugFactory(int index) {
@@ -110,33 +94,26 @@ class ToH {
       name: "New Debug Task $index",
       notes: "Debug Notes",
       listName: "Meine Liste",
+      insertionTime: DateTime.now(),
       index: index,
       icon: const Icon(Icons.developer_mode),
       taskColor: Color(randomColorCode()),
     );
   }
 
-  factory ToH.fromTextInputH(String input, Duration? timeLimit, List<ToH>? children, String listName,
-      DateTime? listDate, int index, bool isDone, Icon icon, Color taskColor, bool isHighlighted, bool isSelected,
-      DateTime? deadline, bool isRepeating, List<TDConstraint>? constraints) {
-    bool isRepeating = isRepeatingRe1.hasMatch(input) || isRepeatingRe2.hasMatch(input);
-    bool multiLine = isMultiLineRe.hasMatch(input);
-
-    // ToH retToH = ToH(name: , notes: "", listName: listName, index: index, icon: icon, taskColor: taskColor);
-    return ToH.debugFactory(index);
-  }
+  factory ToH.blankToH(String name)  =>
+      ToH(name: name, listName: '', index: 0, taskColor: const Color(0x00000000), insertionTime: DateTime(0));
 
   bool deadlineOverdue() {
-    if (listDate == null || deadline == null) return false;
-    if (listDate!.isAfter(DateTime(deadline!.year, deadline!.month, deadline!.day))) return false;
-    return true;
+    if (deadline == null) return false;
+    return DateTime.now().isAfter(deadline!);
   }
 
   Map<String, dynamic> toJson() {
     final List<Map<String, dynamic>>? jsonChildren =
         (children?.isNotEmpty ?? false) ? List.from([for (ToH child in children!) child.toJson()]) : null;
-    final List<Map<String, dynamic>>? jsonConstraints = (constraints?.isNotEmpty ?? false)
-        ? List.from([for (TDConstraint child in constraints!) child.toJson()])
+    final List<Map<String, dynamic>>? jsonRequiredToHs = (requiredToHs?.isNotEmpty ?? false)
+        ? List.from([for (ToH child in requiredToHs!) child.toJson()])
         : null;
     return {
       "uid": uid.toString(),
@@ -145,17 +122,17 @@ class ToH {
       "timeLimit": timeLimit?.inSeconds,
       "children": jsonChildren,
       "listName": listName,
-      "listDate": listDate?.toIso8601String(),
+      "insertionTime": insertionTime.toIso8601String(),
       "index": index,
       "isDone": isDone,
-      "icon": serializeIcon(icon.icon!),
+      "icon": icon == null ? null : serializeIcon(icon!.icon!),
       "taskColor": taskColor.value,
       "isHighlighted": isHighlighted,
       "isSelected": isSelected,
       "deadline": deadline?.toIso8601String(),
       "isRepeating": isRepeating,
-      "constraints": jsonConstraints,
-      "recursionDepth": recursionDepth
+      "requiredToHs": jsonRequiredToHs,
+      "recursionDepth": recursionDepth,
     };
   }
 
@@ -168,25 +145,26 @@ class ToH {
             ? [for (Map<String, dynamic> jsonChild in json["children"]) ToH.fromJson(jsonChild)]
             : null,
         listName = json["listName"],
-        listDate = json["listDate"] != null ? DateTime.parse(json["listDate"]) : null,
+        insertionTime = DateTime.parse(json["insertionTime"]),
         index = json["index"],
         isDone = json["isDone"],
-        icon = Icon(deserializeIcon(json["icon"])!),
+        icon = json["icon"] == null ? null : Icon(deserializeIcon(json["icon"])!),
         taskColor = Color(json["taskColor"]),
         isHighlighted = json["isHighlighted"],
         isSelected = json["isSelected"],
         deadline = json["deadline"] != null ? DateTime.parse(json["deadline"]) : null,
         recursionDepth = json["recursionDepth"],
         isRepeating = json["isRepeating"],
-        constraints = json["constraints"] != null
-            ? [for (Map<String, dynamic> jsonConstraint in json["constraint"]) TDConstraint.fromJson(jsonConstraint)]
+        constraintDepth = 0,
+        requiredToHs = json["requiredToHs"] != null
+            ? [for (Map<String, dynamic> jsonChild in json["requiredToHs"]) ToH.fromJson(jsonChild)]
             : null;
 }
 
 // Structure (Not for task list, only backend and structure maniplator):
 //  Whenactive
 class StructureToH {
-  StructureTaskActive whenActive;
+  ToHActive whenActive;
   final ToH toh;
 
   StructureToH({required this.toh, required this.whenActive});
@@ -195,7 +173,7 @@ class StructureToH {
   }
 
   StructureToH.fromJson(Map<String, dynamic> json)
-      : whenActive = StructureTaskActive.values.elementAt(json["whenActive"]),
+      : whenActive = ToHActive.values.elementAt(json["whenActive"]),
         toh = ToH.fromJson(json["toh"]);
 }
 
@@ -203,16 +181,18 @@ class StructureToH {
 //  Periodicity(Rhythm, Base_Date)
 class PeriodicToH {
   Periodicity periodicity;
+  ToHActive whenActive;
   final ToH toh;
 
-  PeriodicToH({required this.toh, required this.periodicity});
+  PeriodicToH({required this.toh, required this.periodicity, required this.whenActive});
   Map<String, dynamic> toJson() {
-    return {"periodicity": periodicity.toJson(), "toh": toh.toJson()};
+    return {"periodicity": periodicity.toJson(), "toh": toh.toJson(), "whenActive": whenActive.index};
   }
 
   PeriodicToH.fromJson(Map<String, dynamic> json)
       : periodicity = Periodicity.fromJson(json["periodicity"]),
-        toh = ToH.fromJson(json["toh"]);
+        toh = ToH.fromJson(json["toh"]),
+        whenActive = ToHActive.values.elementAt(json["whenActive"]);
 }
 
 void addTask() {}
